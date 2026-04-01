@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-server-card.json",
+  "schema_version": "2025-06-18",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "Quantiva Intelligence",
+    "title": "Quantiva Intelligence",
+    "version": "1.0.0"
+  },
+  "description": "An advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling. Leverages machine learning algorithms to process large datasets, identify trends, and generate actionable insights. Supports CSV, JSON, and real-time market data feeds. Ideal for hedge funds, traders, and research institutions.",
+  "iconUrl": "https://blob.8004scan.app/...",  
+  "endpoint": "https://your-mcp-server-quantiva.com/mcp",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "prompts": {},
+    "resources": {}
+  },
+  "tools": ["market_forecast", "financial_modeling", "trend_analysis", "data_processing"],
+  "prompts": ["forecast_report", "investment_analysis"],
+  "resources": ["market_data", "financial_reports"]
+}
