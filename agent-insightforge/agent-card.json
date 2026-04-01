@@ -1,0 +1,31 @@
+{
+  "id": "insightforge-ai",
+  "name": "InsightForge AI",
+  "description": "Advanced data intelligence agent that transforms raw data into actionable insights. Performs deep statistical analysis, automated chart generation, predictive modeling, and professional report creation.",
+  "version": "0.3.0",
+  "url": "https://YOUR-A2A-SERVER-insightforge.com",
+  "skills": [
+    {
+      "id": "statistical_analysis",
+      "name": "Statistical Analysis",
+      "description": "Perform deep statistical analysis on complex datasets"
+    },
+    {
+      "id": "predictive_modeling",
+      "name": "Predictive Modeling",
+      "description": "Build predictive models for forecasting"
+    },
+    {
+      "id": "report_creation",
+      "name": "Report Creation",
+      "description": "Generate professional reports in seconds"
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "authentication": {
+    "type": "none"
+  }
+}
