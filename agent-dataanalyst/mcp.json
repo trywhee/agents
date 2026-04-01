@@ -10,7 +10,7 @@
   },
   "description": "A specialized AI agent that performs advanced data analysis, chart generation, and automated reporting. Ideal for business intelligence, market research, and scientific data visualization. Supports CSV, JSON, and SQL databases.",
   "iconUrl": "https://blob.8004scan.app/...",
-  "endpoint": "https://your-mcp-server-dataanalyst.com/mcp",
+  "endpoint": "https://mcp-server-agents-3r6t.vercel.app/mcp",
   "transport": {
     "type": "streamable-http",
     "endpoint": "/mcp"
