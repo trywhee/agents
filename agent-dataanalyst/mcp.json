@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-server-card.json",
+  "schema_version": "2025-06-18",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "DataAnalyst Pro",
+    "title": "DataAnalyst Pro",
+    "version": "1.0.0"
+  },
+  "description": "A specialized AI agent that performs advanced data analysis, chart generation, and automated reporting. Ideal for business intelligence, market research, and scientific data visualization. Supports CSV, JSON, and SQL databases.",
+  "iconUrl": "https://blob.8004scan.app/...",
+  "endpoint": "https://your-mcp-server-dataanalyst.com/mcp",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "prompts": {},
+    "resources": {}
+  },
+  "tools": ["data_analysis", "chart_generation", "report_automation"],
+  "prompts": ["business_intelligence", "market_research"],
+  "resources": ["csv_data", "sql_database"]
+}
