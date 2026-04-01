@@ -1,1 +1,36 @@
-
+{
+  "id": "quantiva-intelligence",
+  "name": "Quantiva Intelligence",
+  "description": "An advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling. Leverages machine learning algorithms to process large datasets, identify trends, and generate actionable insights.",
+  "version": "0.3.0",
+  "url": "https://YOUR-A2A-SERVER-quantiva.com",
+  "skills": [
+    {
+      "id": "market_forecast",
+      "name": "Market Forecasting",
+      "description": "Predict market trends using machine learning algorithms"
+    },
+    {
+      "id": "financial_modeling",
+      "name": "Financial Modeling",
+      "description": "Build complex financial models for investment analysis"
+    },
+    {
+      "id": "trend_analysis",
+      "name": "Trend Analysis",
+      "description": "Identify patterns and trends in large datasets"
+    },
+    {
+      "id": "data_processing",
+      "name": "Data Processing",
+      "description": "Process CSV, JSON, and real-time market data feeds"
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "authentication": {
+    "type": "none"
+  }
+}
