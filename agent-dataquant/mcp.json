@@ -10,7 +10,7 @@
   },
   "description": "High-performance AI analytics agent for quantitative analysis and automated reporting",
   "iconUrl": "https://blob.8004scan.app/98e422c0cb52c064e37ce1956d4b312e32b01fefa66c1280c4adebe24ef3cc34.jpg",
-  "endpoint": "https://zwh6wg-3000.csb.app/mcp",
+  "endpoint": "https://mcp-server-agents-3r6t.vercel.app/mcp",
   "transport": {
     "type": "streamable-http",
     "endpoint": "/mcp"
