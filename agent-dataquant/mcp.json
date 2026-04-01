@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-server-card.json",
+  "schema_version": "2025-06-18",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "DataQuant Pro",
+    "title": "DataQuant Pro Analytics Agent",
+    "version": "1.0.0"
+  },
+  "description": "High-performance AI analytics agent for quantitative analysis and automated reporting",
+  "iconUrl": "https://blob.8004scan.app/98e422c0cb52c064e37ce1956d4b312e32b01fefa66c1280c4adebe24ef3cc34.jpg",
+  "endpoint": "https://zwh6wg-3000.csb.app/mcp",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "prompts": {},
+    "resources": {}
+  },
+  "tools": ["detect_patterns", "generate_dashboard", "forecast_financials", "automate_reporting"],
+  "prompts": ["detect_patterns", "dashboard_creation", "financial_forecast", "report_automation"],
+  "resources": ["database", "api_docs"]
+}
