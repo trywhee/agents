@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-server-card.json",
+  "schema_version": "2025-06-18",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "InsightForge AI",
+    "title": "InsightForge AI",
+    "version": "1.0.0"
+  },
+  "description": "InsightForge AI is an advanced data intelligence agent designed to transform raw data into actionable insights. It performs deep statistical analysis, automated chart generation, predictive modeling, and professional report creation in seconds. Supports CSV, JSON, API endpoints, and SQL databases.",
+  "iconUrl": "https://blob.8004scan.app/...",
+  "endpoint": "https://your-mcp-server-insightforge.com/mcp",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "prompts": {},
+    "resources": {}
+  },
+  "tools": ["statistical_analysis", "predictive_modeling", "report_creation"],
+  "prompts": ["insight_generation", "data_visualization"],
+  "resources": ["api_endpoints", "sql_databases"]
+}
