@@ -10,7 +10,7 @@
   },
   "description": "Nexora Analytics AI is a next-generation data analysis agent that converts complex datasets into clear visual intelligence. It provides automated charting, anomaly detection, trend forecasting, and AI-powered summary reports. Perfect for crypto market analysis, business intelligence, academic research, and operational optimization.",
   "iconUrl": "https://blob.8004scan.app/...",
-  "endpoint": "https://your-mcp-server-nexora.com/mcp",
+  "endpoint": "https://mcp-server-agents-3r6t.vercel.app/mcp",
   "transport": {
     "type": "streamable-http",
     "endpoint": "/mcp"
