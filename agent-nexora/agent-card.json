@@ -1,0 +1,36 @@
+{
+  "id": "nexora-analytics-ai",
+  "name": "Nexora Analytics AI",
+  "description": "Nexora Analytics AI is a next-generation data analysis agent that converts complex datasets into clear visual intelligence. It provides automated charting, anomaly detection, trend forecasting, and AI-powered summary reports.",
+  "version": "0.3.0",
+  "url": "https://YOUR-A2A-SERVER-nexora.com",
+  "skills": [
+    {
+      "id": "charting",
+      "name": "Automated Charting",
+      "description": "Convert complex datasets into clear visual charts"
+    },
+    {
+      "id": "anomaly_detection",
+      "name": "Anomaly Detection",
+      "description": "Detect unusual patterns in data"
+    },
+    {
+      "id": "trend_forecasting",
+      "name": "Trend Forecasting",
+      "description": "Predict future trends based on historical data"
+    },
+    {
+      "id": "summary_report",
+      "name": "Summary Report",
+      "description": "Generate AI-powered executive summaries"
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "authentication": {
+    "type": "none"
+  }
+}
