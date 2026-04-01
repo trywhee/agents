@@ -10,7 +10,7 @@
   },
   "description": "InsightForge AI is an advanced data intelligence agent designed to transform raw data into actionable insights. It performs deep statistical analysis, automated chart generation, predictive modeling, and professional report creation in seconds. Supports CSV, JSON, API endpoints, and SQL databases.",
   "iconUrl": "https://blob.8004scan.app/...",
-  "endpoint": "https://your-mcp-server-insightforge.com/mcp",
+  "endpoint": "https://mcp-server-agents-3r6t.vercel.app/mcp",
   "transport": {
     "type": "streamable-http",
     "endpoint": "/mcp"
