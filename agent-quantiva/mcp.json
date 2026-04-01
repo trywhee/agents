@@ -10,7 +10,7 @@
   },
   "description": "An advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling. Leverages machine learning algorithms to process large datasets, identify trends, and generate actionable insights. Supports CSV, JSON, and real-time market data feeds. Ideal for hedge funds, traders, and research institutions.",
   "iconUrl": "https://blob.8004scan.app/...",  
-  "endpoint": "https://your-mcp-server-quantiva.com/mcp",
+  "endpoint": "https://mcp-server-agents-3r6t.vercel.app/mcp",
   "transport": {
     "type": "streamable-http",
     "endpoint": "/mcp"
