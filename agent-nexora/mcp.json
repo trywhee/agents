@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-server-card.json",
+  "schema_version": "2025-06-18",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "Nexora Analytics AI",
+    "title": "Nexora Analytics AI",
+    "version": "1.0.0"
+  },
+  "description": "Nexora Analytics AI is a next-generation data analysis agent that converts complex datasets into clear visual intelligence. It provides automated charting, anomaly detection, trend forecasting, and AI-powered summary reports. Perfect for crypto market analysis, business intelligence, academic research, and operational optimization.",
+  "iconUrl": "https://blob.8004scan.app/...",
+  "endpoint": "https://your-mcp-server-nexora.com/mcp",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "prompts": {},
+    "resources": {}
+  },
+  "tools": ["charting", "anomaly_detection", "trend_forecasting", "summary_report"],
+  "prompts": ["dashboard_creation", "executive_summary"],
+  "resources": ["database", "api_endpoints"]
+}
