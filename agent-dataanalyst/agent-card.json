@@ -1,0 +1,31 @@
+{
+  "id": "dataanalyst-pro",
+  "name": "DataAnalyst Pro",
+  "description": "A specialized AI agent that performs advanced data analysis, chart generation, and automated reporting. Ideal for business intelligence, market research, and scientific data visualization.",
+  "version": "0.3.0",
+  "url": "https://YOUR-A2A-SERVER-dataanalyst.com",
+  "skills": [
+    {
+      "id": "data_analysis",
+      "name": "Data Analysis",
+      "description": "Perform advanced data analysis on structured datasets"
+    },
+    {
+      "id": "chart_generation",
+      "name": "Chart Generation",
+      "description": "Generate professional charts and visualizations"
+    },
+    {
+      "id": "report_automation",
+      "name": "Report Automation",
+      "description": "Automate reporting and summary generation"
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "authentication": {
+    "type": "none"
+  }
+}
