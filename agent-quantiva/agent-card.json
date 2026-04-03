@@ -1,35 +1,53 @@
 {
   "id": "quantiva-intelligence",
   "name": "Quantiva Intelligence",
-  "description": "An advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling. Leverages machine learning algorithms to process large datasets, identify trends, and generate actionable insights.",
-  "version": "0.3.0",
-  "url": "https://YOUR-A2A-SERVER-quantiva.com",
+  "description": "Financial analysis & market forecasting agent using machine learning algorithms. Leverages ML to process large datasets, identify trends, and generate actionable insights for hedge funds, traders, and research institutions.",
+  "version": "1.0.0",
+  "tags": ["finance", "market-forecasting", "financial-modeling", "trend-analysis", "quantitative"],
+  "pricing_model": "0.002 ETH per query or enterprise subscription available",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-quantiva",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Market forecast",
+      "description": "Predict next quarter market trends",
+      "command": "/forecast BTC --period 90d --indicators rsi,macd"
+    },
+    {
+      "title": "Financial modeling",
+      "description": "Build DCF model for stock analysis",
+      "command": "/model AAPL --type dcf --years 5"
+    },
+    {
+      "title": "Trend analysis",
+      "description": "Analyze sector performance trends",
+      "command": "/trend technology --since 2025-01-01 --metric revenue"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-quantiva",
   "skills": [
     {
       "id": "market_forecast",
-      "name": "Market Forecasting",
-      "description": "Predict market trends using machine learning algorithms"
+      "name": "Market Forecast",
+      "description": "Predict market trends using ML algorithms"
     },
     {
       "id": "financial_modeling",
       "name": "Financial Modeling",
-      "description": "Build complex financial models for investment analysis"
+      "description": "Build complex financial models"
     },
     {
       "id": "trend_analysis",
       "name": "Trend Analysis",
-      "description": "Identify patterns and trends in large datasets"
+      "description": "Analyze market trends and patterns"
     },
     {
       "id": "data_processing",
       "name": "Data Processing",
-      "description": "Process CSV, JSON, and real-time market data feeds"
+      "description": "Process structured datasets (CSV, JSON)"
     }
   ],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
   "authentication": {
     "type": "none"
   }
