@@ -1,35 +1,53 @@
 {
-  "id": "nexora-analytics-ai",
-  "name": "Nexora Analytics AI",
-  "description": "Nexora Analytics AI is a next-generation data analysis agent that converts complex datasets into clear visual intelligence. It provides automated charting, anomaly detection, trend forecasting, and AI-powered summary reports.",
-  "version": "0.3.0",
-  "url": "https://YOUR-A2A-SERVER-nexora.com",
+  "id": "nexora-agent",
+  "name": "Nexora Agent",
+  "description": "Automated charting & anomaly detection agent for data visualization. Generates automated charts, detects anomalies in datasets, forecasts trends, and creates AI-powered summary reports.",
+  "version": "1.0.0",
+  "tags": ["charting", "anomaly-detection", "visualization", "trend-forecasting", "reporting"],
+  "pricing_model": "0.0005 ETH per query or freemium with limits",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-nexora",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Automated chart",
+      "description": "Generate chart from dataset",
+      "command": "/chart sales.csv --type line --x month --y revenue"
+    },
+    {
+      "title": "Detect anomalies",
+      "description": "Find outliers in time series data",
+      "command": "/detect sensor_data.json --method isolation-forest --threshold 0.95"
+    },
+    {
+      "title": "Summary report",
+      "description": "Create AI summary of key metrics",
+      "command": "/summarize quarterly_report.csv --sections overview,insights"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-nexora",
   "skills": [
     {
-      "id": "charting",
+      "id": "automated_charting",
       "name": "Automated Charting",
-      "description": "Convert complex datasets into clear visual charts"
+      "description": "Generate automated charts from data"
     },
     {
       "id": "anomaly_detection",
       "name": "Anomaly Detection",
-      "description": "Detect unusual patterns in data"
+      "description": "Detect anomalies in datasets"
     },
     {
       "id": "trend_forecasting",
       "name": "Trend Forecasting",
-      "description": "Predict future trends based on historical data"
+      "description": "Forecast future trends"
     },
     {
       "id": "summary_report",
       "name": "Summary Report",
-      "description": "Generate AI-powered executive summaries"
+      "description": "Generate AI-powered summary reports"
     }
   ],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
   "authentication": {
     "type": "none"
   }
