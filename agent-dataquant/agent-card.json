@@ -1,35 +1,53 @@
 {
   "id": "dataquant-pro",
   "name": "DataQuant Pro",
-  "description": "High-performance AI analytics agent for advanced quantitative analysis and automated reporting. Processes structured datasets, detects patterns, generates visualizations, and delivers strategic insights.",
-  "version": "0.3.0",
-  "url": "https://YOUR-A2A-SERVER-dataquant.com",
+  "description": "Pattern detection & financial forecasting for quantitative analysis. Processes structured datasets, detects patterns, generates interactive dashboards, forecasts financial metrics, and automates report generation.",
+  "version": "1.0.0",
+  "tags": ["quantitative-analysis", "pattern-detection", "financial-forecasting", "dashboards", "automation"],
+  "pricing_model": "0.001 ETH per query or monthly subscription",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-dataquant",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Detect patterns",
+      "description": "Find patterns in structured data",
+      "command": "/detect patterns financial_data.csv --algorithm dbscan"
+    },
+    {
+      "title": "Generate dashboard",
+      "description": "Create interactive KPI dashboard",
+      "command": "/dashboard metrics.json --type interactive --layout grid"
+    },
+    {
+      "title": "Forecast financials",
+      "description": "Predict quarterly earnings",
+      "command": "/forecast earnings --company TSLA --quarters 4"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataquant",
   "skills": [
     {
-      "id": "pattern_detection",
-      "name": "Pattern Detection",
+      "id": "detect_patterns",
+      "name": "Detect Patterns",
       "description": "Detect patterns in structured datasets"
     },
     {
-      "id": "dashboard_generation",
-      "name": "Dashboard Generation",
-      "description": "Generate interactive dashboards from data"
+      "id": "generate_dashboard",
+      "name": "Generate Dashboard",
+      "description": "Generate interactive dashboards"
     },
     {
-      "id": "financial_forecasting",
-      "name": "Financial Forecasting",
-      "description": "Build forecasting models for financial data"
+      "id": "forecast_financials",
+      "name": "Forecast Financials",
+      "description": "Forecast financial metrics"
     },
     {
-      "id": "automated_reporting",
-      "name": "Automated Reporting",
-      "description": "Generate automated reports on schedule"
+      "id": "automate_reporting",
+      "name": "Automate Reporting",
+      "description": "Automate report generation"
     }
   ],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
   "authentication": {
     "type": "none"
   }
