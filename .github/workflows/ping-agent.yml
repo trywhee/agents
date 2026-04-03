@@ -1,28 +1,44 @@
-name: Ping MCP Agent for Momentum
+name: Ping MCP Agents for Momentum
 
 on:
   schedule:
-    - cron: '0 */4 * * *'  # Setiap 6 jam
-  workflow_dispatch:        # Bisa manual
+    - cron: '0 */6 * * *'  # Setiap 6 jam (04:00, 10:00, 16:00, 22:00 WIB)
+  workflow_dispatch:        # Bisa di-run manual kapan saja
 
 jobs:
-  ping-agent:
+  ping-all-agents:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping DataAnalyst (GET)
+      # ========== PING KE-5 AGENT (GET) ==========
+      - name: Ping DataAnalyst Pro
         run: |
           curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataanalyst
           
+      - name: Ping Quantiva Intelligence
+        run: |
+          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-quantiva
+          
+      - name: Ping Nexora Agent
+        run: |
+          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-nexora
+          
+      - name: Ping DataQuant Pro
+        run: |
+          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataquant
+          
+      - name: Ping InsightForge Agent
+        run: |
+          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-insightforge
+          
+      # ========== POST REQUEST KE MCP SERVER ==========
       - name: Call MCP tools/list (POST)
         run: |
           curl -X POST https://mcp-server-agents-8aui.vercel.app/mcp \
             -H "Content-Type: application/json" \
             -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
-          
-      - name: Ping Quantiva (GET)
+            
+      - name: Call MCP prompts/list (POST)
         run: |
-          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-quantiva
-          
-      - name: Ping Nexora (GET)
-        run: |
-          curl -I -s https://mcp-server-agents-8aui.vercel.app/mcp/agent-nexora
+          curl -X POST https://mcp-server-agents-8aui.vercel.app/mcp \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","method":"prompts/list","id":2}'
