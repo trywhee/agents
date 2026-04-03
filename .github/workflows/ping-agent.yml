@@ -2,7 +2,7 @@ name: Ping MCP Agents for Momentum
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Setiap 6 jam (04:00, 10:00, 16:00, 22:00 WIB)
+    - cron: '0 */4 * * *'  # Setiap 6 jam (04:00, 10:00, 16:00, 22:00 WIB)
   workflow_dispatch:        # Bisa di-run manual kapan saja
 
 jobs:
