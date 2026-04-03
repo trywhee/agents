@@ -1,0 +1,31 @@
+{
+  "name": "DataQuant Pro",
+  "description": "Pattern detection & financial forecasting for quantitative analysis. Processes structured datasets, detects patterns, generates interactive dashboards, forecasts financial metrics, and automates report generation.",
+  "version": "1.0.0",
+  "schema_version": "0.8.0",
+  "authors": [
+    {
+      "name": "trywhee",
+      "email": "trywhee@gmail.com",
+      "url": "https://github.com/trywhee"
+    }
+  ],
+  "created_at": "2026-04-03T00:00:00Z",
+  "domains": [
+    { "name": "quantitative_analysis", "id": 1307 },
+    { "name": "financial_forecasting", "id": 1308 }
+  ],
+  "skills": [
+    { "name": "detect_patterns", "id": 607 },
+    { "name": "generate_dashboard", "id": 608 },
+    { "name": "forecast_financials", "id": 1309 },
+    { "name": "automate_reporting", "id": 904 }
+  ],
+  "locators": [
+    {
+      "type": "mcp_endpoint",
+      "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataquant"
+    }
+  ],
+  "modules": []
+}
