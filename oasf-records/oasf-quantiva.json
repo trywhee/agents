@@ -1,0 +1,31 @@
+{
+  "name": "Quantiva Intelligence",
+  "description": "Financial analysis & market forecasting agent using machine learning algorithms. Processes large datasets, identifies trends, and generates actionable insights for hedge funds, traders, and research institutions.",
+  "version": "1.0.0",
+  "schema_version": "0.8.0",
+  "authors": [
+    {
+      "name": "trywhee",
+      "email": "trywhee@gmail.com",
+      "url": "https://github.com/trywhee"
+    }
+  ],
+  "created_at": "2026-04-03T00:00:00Z",
+  "domains": [
+    { "name": "finance", "id": 1301 },
+    { "name": "market_forecasting", "id": 1303 }
+  ],
+  "skills": [
+    { "name": "market_forecast", "id": 1305 },
+    { "name": "financial_modeling", "id": 1302 },
+    { "name": "trend_analysis", "id": 1304 },
+    { "name": "data_processing", "id": 602 }
+  ],
+  "locators": [
+    {
+      "type": "mcp_endpoint",
+      "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-quantiva"
+    }
+  ],
+  "modules": []
+}
