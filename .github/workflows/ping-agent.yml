@@ -1,0 +1,25 @@
+name: Ping MCP Agent for Momentum
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Setiap 6 jam (4x sehari)
+  workflow_dispatch:        # Bisa di-run manual juga
+
+jobs:
+  ping-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping DataAnalyst MCP Agent
+        run: |
+          curl -X GET https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataanalyst
+          curl -X POST https://mcp-server-agents-8aui.vercel.app/mcp \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
+          
+      - name: Ping Quantiva Agent
+        run: |
+          curl -X GET https://mcp-server-agents-8aui.vercel.app/mcp/agent-quantiva
+          
+      - name: Ping Nexora Agent
+        run: |
+          curl -X GET https://mcp-server-agents-8aui.vercel.app/mcp/agent-nexora
