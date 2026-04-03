@@ -1,30 +1,48 @@
 {
-  "id": "insightforge-ai",
-  "name": "InsightForge AI",
-  "description": "Advanced data intelligence agent that transforms raw data into actionable insights. Performs deep statistical analysis, automated chart generation, predictive modeling, and professional report creation.",
-  "version": "0.3.0",
-  "url": "https://YOUR-A2A-SERVER-insightforge.com",
+  "id": "insightforge-agent",
+  "name": "InsightForge Agent",
+  "description": "Statistical analysis & predictive modeling for deep insights. Performs deep statistical analysis, builds predictive models, and creates professional reports for data-driven decision making.",
+  "version": "1.0.0",
+  "tags": ["statistics", "predictive-modeling", "machine-learning", "reporting", "insights"],
+  "pricing_model": "0.002 ETH per query or enterprise subscription",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-insightforge",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Statistical analysis",
+      "description": "Perform deep statistical analysis",
+      "command": "/stats dataset.csv --tests t-test,anova --confidence 0.95"
+    },
+    {
+      "title": "Predictive modeling",
+      "description": "Build ML model for prediction",
+      "command": "/predict model --train train.csv --target price --algo random-forest"
+    },
+    {
+      "title": "Create report",
+      "description": "Generate professional analysis report",
+      "command": "/report analysis_results.json --format pdf --include-charts"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-insightforge",
   "skills": [
     {
       "id": "statistical_analysis",
       "name": "Statistical Analysis",
-      "description": "Perform deep statistical analysis on complex datasets"
+      "description": "Deep statistical analysis"
     },
     {
       "id": "predictive_modeling",
       "name": "Predictive Modeling",
-      "description": "Build predictive models for forecasting"
+      "description": "Build predictive models"
     },
     {
       "id": "report_creation",
       "name": "Report Creation",
-      "description": "Generate professional reports in seconds"
+      "description": "Create professional reports"
     }
   ],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
   "authentication": {
     "type": "none"
   }
