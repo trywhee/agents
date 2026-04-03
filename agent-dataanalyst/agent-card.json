@@ -2,8 +2,30 @@
   "id": "dataanalyst-pro",
   "name": "DataAnalyst Pro",
   "description": "A specialized AI agent that performs advanced data analysis, chart generation, and automated reporting. Ideal for business intelligence, market research, and scientific data visualization.",
-  "version": "0.3.0",
-  "url": "https://YOUR-A2A-SERVER-dataanalyst.com",
+  "version": "1.0.0",
+  "tags": ["data-analysis", "charting", "reporting", "business-intelligence", "visualization"],
+  "pricing_model": "0.001 ETH per query or monthly subscription available",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-dataanalyst",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Analyze CSV dataset",
+      "description": "Upload a CSV file and get statistical analysis",
+      "command": "/analyze data.csv --metrics mean,median,std"
+    },
+    {
+      "title": "Generate sales chart",
+      "description": "Create a bar chart from sales data",
+      "command": "/chart sales_data.json --type bar --title 'Monthly Sales'"
+    },
+    {
+      "title": "Automated report",
+      "description": "Generate weekly performance report",
+      "command": "/report weekly --format pdf --send-to email@example.com"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-dataanalyst",
   "skills": [
     {
       "id": "data_analysis",
@@ -21,10 +43,6 @@
       "description": "Automate reporting and summary generation"
     }
   ],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
   "authentication": {
     "type": "none"
   }
