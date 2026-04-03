@@ -1,0 +1,30 @@
+{
+  "name": "InsightForge Agent",
+  "description": "Statistical analysis & predictive modeling for deep insights. Performs deep statistical analysis, builds predictive models, and creates professional reports for data-driven decision making.",
+  "version": "1.0.0",
+  "schema_version": "0.8.0",
+  "authors": [
+    {
+      "name": "trywhee",
+      "email": "trywhee@gmail.com",
+      "url": "https://github.com/trywhee"
+    }
+  ],
+  "created_at": "2026-04-03T00:00:00Z",
+  "domains": [
+    { "name": "statistical_analysis", "id": 1406 },
+    { "name": "predictive_modeling", "id": 1407 }
+  ],
+  "skills": [
+    { "name": "statistical_analysis", "id": 609 },
+    { "name": "predictive_modeling", "id": 610 },
+    { "name": "report_creation", "id": 905 }
+  ],
+  "locators": [
+    {
+      "type": "mcp_endpoint",
+      "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-insightforge"
+    }
+  ],
+  "modules": []
+}
