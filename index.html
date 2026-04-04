@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantiva Agents - MCP & A2A Services</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 1200px;
@@ -13,18 +19,37 @@
             background: #0a0a0a;
             color: #e0e0e0;
         }
+
         h1 {
             color: #4ade80;
             border-bottom: 2px solid #4ade80;
             display: inline-block;
             padding-bottom: 8px;
+            font-size: 2rem;
         }
+
+        .subtitle {
+            margin-top: 16px;
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .agent-count {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: #4ade80;
+            margin-left: 12px;
+        }
+
         .agent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 24px;
             margin-top: 32px;
         }
+
         .agent-card {
             background: #1a1a1a;
             border-radius: 12px;
@@ -32,40 +57,59 @@
             border: 1px solid #333;
             transition: transform 0.2s, border-color 0.2s;
         }
+
         .agent-card:hover {
             transform: translateY(-4px);
             border-color: #4ade80;
         }
+
         .agent-name {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 8px;
             color: #4ade80;
         }
+
         .agent-id {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #888;
             margin-bottom: 12px;
+            font-family: monospace;
         }
+
         .description {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #aaa;
             margin-bottom: 16px;
-            line-height: 1.4;
+            line-height: 1.5;
         }
+
         .links {
             margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
+
         .links a {
             display: inline-block;
-            margin-right: 16px;
             color: #4ade80;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            background: #0a0a0a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            transition: all 0.2s;
         }
+
         .links a:hover {
-            text-decoration: underline;
+            text-decoration: none;
+            background: #4ade80;
+            color: #0a0a0a;
+            border-color: #4ade80;
         }
+
         .status {
             display: inline-block;
             padding: 4px 12px;
@@ -73,9 +117,15 @@
             font-size: 0.7rem;
             font-weight: bold;
             background: #2a2a2a;
-            color: #ffaa44;
+            color: #4ade80;
             margin-bottom: 12px;
         }
+
+        .status-story {
+            background: #2a2a2a;
+            color: #a855f7;
+        }
+
         footer {
             margin-top: 48px;
             text-align: center;
@@ -84,11 +134,20 @@
             border-top: 1px solid #333;
             padding-top: 24px;
         }
+
+        footer a {
+            color: #4ade80;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <h1>🤖 Quantiva Agents</h1>
-    <p>MCP & A2A services for AI analytics agents registered on ERC-8004</p>
+    <h1>🤖 Quantiva Agents <span class="agent-count">6 Agents</span></h1>
+    <p class="subtitle">MCP & A2A services for AI analytics agents registered on ERC-8004</p>
 
     <div class="agent-grid">
         <!-- Agent 1: Quantiva Intelligence -->
@@ -96,10 +155,10 @@
             <div class="status">● Active</div>
             <div class="agent-name">Quantiva Intelligence</div>
             <div class="agent-id">Agent ID: 22524 | Base Chain</div>
-            <div class="description">Advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling.</div>
+            <div class="description">Advanced AI agent specialized in quantitative analysis, market forecasting, and financial modeling using ML algorithms.</div>
             <div class="links">
-                <a href="/agents/agent-quantiva/">📡 MCP Metadata</a>
-                <a href="/agents/agent-quantiva/agent-card.json">📋 A2A Card</a>
+                <a href="/agents/agent-quantiva/">📡 MCP</a>
+                <a href="/agents/agent-quantiva/agent-card.json">📋 A2A</a>
             </div>
         </div>
 
@@ -108,10 +167,10 @@
             <div class="status">● Active</div>
             <div class="agent-name">Nexora Analytics AI</div>
             <div class="agent-id">Agent ID: 22497 | Base Chain</div>
-            <div class="description">Next-generation data analysis agent that converts complex datasets into clear visual intelligence.</div>
+            <div class="description">Next-generation data analysis agent that converts complex datasets into clear visual intelligence and automated charting.</div>
             <div class="links">
-                <a href="/agents/agent-nexora/">📡 MCP Metadata</a>
-                <a href="/agents/agent-nexora/agent-card.json">📋 A2A Card</a>
+                <a href="/agents/agent-nexora/">📡 MCP</a>
+                <a href="/agents/agent-nexora/agent-card.json">📋 A2A</a>
             </div>
         </div>
 
@@ -120,10 +179,10 @@
             <div class="status">● Active</div>
             <div class="agent-name">DataQuant Pro</div>
             <div class="agent-id">Agent ID: 22455 | Base Chain</div>
-            <div class="description">High-performance AI analytics agent for advanced quantitative analysis and automated reporting.</div>
+            <div class="description">High-performance AI analytics agent for advanced quantitative analysis, pattern detection, and automated reporting.</div>
             <div class="links">
-                <a href="/agents/agent-dataquant/">📡 MCP Metadata</a>
-                <a href="/agents/agent-dataquant/agent-card.json">📋 A2A Card</a>
+                <a href="/agents/agent-dataquant/">📡 MCP</a>
+                <a href="/agents/agent-dataquant/agent-card.json">📋 A2A</a>
             </div>
         </div>
 
@@ -132,10 +191,10 @@
             <div class="status">● Active</div>
             <div class="agent-name">DataAnalyst Pro</div>
             <div class="agent-id">Agent ID: 22300 | Base Chain</div>
-            <div class="description">Specialized AI agent that performs advanced data analysis, chart generation, and automated reporting.</div>
+            <div class="description">Specialized AI agent that performs advanced data analysis, chart generation, and automated reporting for business intelligence.</div>
             <div class="links">
-                <a href="/agents/agent-dataanalyst/">📡 MCP Metadata</a>
-                <a href="/agents/agent-dataanalyst/agent-card.json">📋 A2A Card</a>
+                <a href="/agents/agent-dataanalyst/">📡 MCP</a>
+                <a href="/agents/agent-dataanalyst/agent-card.json">📋 A2A</a>
             </div>
         </div>
 
@@ -144,17 +203,31 @@
             <div class="status">● Active</div>
             <div class="agent-name">InsightForge AI</div>
             <div class="agent-id">Agent ID: 22398 | Base Chain</div>
-            <div class="description">Advanced data intelligence agent that transforms raw data into actionable insights.</div>
+            <div class="description">Advanced data intelligence agent that transforms raw data into actionable insights with statistical analysis.</div>
             <div class="links">
-                <a href="/agents/agent-insightforge/">📡 MCP Metadata</a>
-                <a href="/agents/agent-insightforge/agent-card.json">📋 A2A Card</a>
+                <a href="/agents/agent-insightforge/">📡 MCP</a>
+                <a href="/agents/agent-insightforge/agent-card.json">📋 A2A</a>
+            </div>
+        </div>
+
+        <!-- Agent 6: StoryWeaver AI (NEW!) -->
+        <div class="agent-card">
+            <div class="status status-story">✨ Creative</div>
+            <div class="agent-name">StoryWeaver AI</div>
+            <div class="agent-id">Agent ID: (Minting Soon) | Base Chain</div>
+            <div class="description">AI creative writing partner for authors, game masters, and content creators. Generate character backstories, plot twists, fantasy dialogues, and immersive world-building lore.</div>
+            <div class="links">
+                <a href="/agents/agent-storyweaver/">📡 MCP</a>
+                <a href="/agents/agent-storyweaver/agent-card.json">📋 A2A</a>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Agents registered on ERC-8004 | Powered by GitHub Pages</p>
-        <p><a href="https://8004scan.io/" style="color:#4ade80;">View on 8004scan</a></p>
+        <p>🤖 Agents registered on ERC-8004 | Powered by GitHub Pages</p>
+        <p>🔗 <a href="https://8004scan.io/" target="_blank">View on 8004scan</a> | 
+           📦 <a href="https://github.com/trywhee/agents" target="_blank">GitHub Repository</a> |
+           🚀 <a href="https://mcp-server-agents-8aui.vercel.app" target="_blank">MCP Server Status</a></p>
     </footer>
 </body>
 </html>
