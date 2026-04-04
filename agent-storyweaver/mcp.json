@@ -1,0 +1,59 @@
+{
+  "name": "StoryWeaver AI",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
+  "description": "An AI creative writing partner that helps authors, game masters, and content creators overcome writer's block. Generate character backstories, plot twists, fantasy dialogues, and immersive world-building lore in multiple languages and genres (fantasy, sci-fi, horror). Integrates with Google Docs and Scrivener via API",
+  "transport": "streamable-http",
+  "methods": ["POST"],
+  "capabilities": {
+    "tools": true,
+    "prompts": true,
+    "resources": true
+  },
+  "tools": [
+    {
+      "name": "character_generation",
+      "description": "Generate detailed character backstories and personalities"
+    },
+    {
+      "name": "plot_twist",
+      "description": "Create unexpected plot twists and narrative turns"
+    },
+    {
+      "name": "world_building",
+      "description": "Develop immersive lore, settings, and magic systems"
+    },
+    {
+      "name": "dialogue_writing",
+      "description": "Generate authentic character dialogues based on personality and context"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "story_outline",
+      "description": "Generate a complete story outline based on genre, tone, and length"
+    },
+    {
+      "name": "character_arc",
+      "description": "Develop a character's growth arc from beginning to end"
+    },
+    {
+      "name": "scene_description",
+      "description": "Generate vivid scene descriptions for locations and atmospheres"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "database://writing-prompts",
+      "name": "Writing Prompts Database",
+      "description": "Collection of creative writing prompts for inspiration"
+    },
+    {
+      "uri": "database://character-templates",
+      "name": "Character Templates",
+      "description": "Pre-built character archetypes and templates"
+    }
+  ],
+  "status": "healthy",
+  "endpoint": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-storyweaver"
+}
