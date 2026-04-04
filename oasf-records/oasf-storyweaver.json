@@ -1,0 +1,35 @@
+{
+  "name": "StoryWeaver AI",
+  "description": "An AI creative writing partner that helps authors, game masters, and content creators overcome writer's block. Generate character backstories, plot twists, fantasy dialogues, and immersive world-building lore.",
+  "version": "1.0.0",
+  "schema_version": "0.8.0",
+  "authors": [
+    {
+      "name": "trywhee",
+      "email": "trywhee@example.com",
+      "url": "https://github.com/trywhee"
+    }
+  ],
+  "created_at": "2026-04-04T00:00:00Z",
+  "domains": [
+    { "name": "creative_writing", "id": 1501 },
+    { "name": "storytelling", "id": 1502 }
+  ],
+  "skills": [
+    { "name": "character_generation", "id": 1503 },
+    { "name": "plot_twist", "id": 1504 },
+    { "name": "world_building", "id": 1505 },
+    { "name": "dialogue_writing", "id": 1506 }
+  ],
+  "locators": [
+    {
+      "type": "mcp_endpoint",
+      "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-storyweaver"
+    },
+    {
+      "type": "a2a_endpoint",
+      "url": "https://trywhee.github.io/agents/agent-storyweaver/agent-card.json"
+    }
+  ],
+  "modules": []
+}
