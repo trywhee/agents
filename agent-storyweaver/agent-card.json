@@ -1,0 +1,54 @@
+{
+  "id": "storyweaver-ai",
+  "name": "StoryWeaver AI",
+  "description": "An AI creative writing partner that helps authors, game masters, and content creators overcome writer's block. Generate character backstories, plot twists, fantasy dialogues, and immersive world-building lore.",
+  "version": "1.0.0",
+  "tags": ["creative-writing", "storytelling", "fantasy", "sci-fi", "horror", "world-building"],
+  "pricing_model": "0.001 ETH per query or monthly subscription",
+  "documentation_url": "https://github.com/trywhee/agents/tree/main/agent-storyweaver",
+  "status": "active",
+  "capabilities": ["streaming", "tools", "prompts", "resources"],
+  "examples": [
+    {
+      "title": "Generate character backstory",
+      "description": "Create a detailed backstory for a fantasy character",
+      "command": "/character --name 'Eldrin' --race elf --class wizard --traits 'curious, brave'"
+    },
+    {
+      "title": "Plot twist generator",
+      "description": "Generate unexpected plot twists for your story",
+      "command": "/twist --genre fantasy --complexity high --surprise-level 8"
+    },
+    {
+      "title": "World-building lore",
+      "description": "Create immersive lore for a fictional world",
+      "command": "/lore --world 'Aethelgard' --aspect 'magic system' --detail extensive"
+    }
+  ],
+  "url": "https://mcp-server-agents-8aui.vercel.app/mcp/agent-storyweaver",
+  "skills": [
+    {
+      "id": "character_generation",
+      "name": "Character Generation",
+      "description": "Generate detailed character backstories and personalities"
+    },
+    {
+      "id": "plot_twist",
+      "name": "Plot Twist Generator",
+      "description": "Create unexpected plot twists and narrative turns"
+    },
+    {
+      "id": "world_building",
+      "name": "World Building",
+      "description": "Develop immersive lore and settings"
+    },
+    {
+      "id": "dialogue_writing",
+      "name": "Dialogue Writing",
+      "description": "Generate authentic character dialogues"
+    }
+  ],
+  "authentication": {
+    "type": "none"
+  }
+}
