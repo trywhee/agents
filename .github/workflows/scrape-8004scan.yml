@@ -2,36 +2,48 @@ name: Scrape 8004scan Agent Stats
 
 on:
   schedule:
-    # Jalankan setiap hari jam 08:00 WIB (00:00 UTC)
-    - cron: '0 0 * * *'
-  # Bisa juga di-run manual dari tab Actions
-  workflow_dispatch:
+    - cron: '0 */12 * * *'  # Setiap 12 jam (pukul 00:00 dan 12:00 UTC)
+  workflow_dispatch:         # Bisa di-run manual dari tab Actions
+
+# Tambahkan permission agar bot punya akses push ke repo
+permissions:
+  contents: write
 
 jobs:
   scrape-and-update:
     runs-on: ubuntu-latest
-    
+    # Tambahkan environment variable untuk mengatasi warning Node.js 20
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
+      # 1. Checkout kode repo
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
+      # 2. Setup Python (versi 3.12 lebih stabil)
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: '3.12'
+
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
-      
+
+      # 4. Jalankan script scraping
       - name: Run scrape script
         run: python scrape_8004scan.py
-      
+
+      # 5. Commit dan push hasil perubahan ( jika ada )
       - name: Commit and push if changed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add STATS.md stats.json
-          git diff --staged --quiet || git commit -m "Update agent stats $(date '+%Y-%m-%d')"
-          git push
+        # Gunakan action resmi untuk push, lebih stabil
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto-update agent stats from 8004scan"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          file_pattern: "STATS.md stats.json"
