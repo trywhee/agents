@@ -29,27 +29,44 @@ def fetch_wallet_data(wallet_address, agent_name):
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # === Ambil Balance SUP ===
+        # === AMBIL BALANCE SUP (BUKAN USD) ===
         balance = "0"
-        # Coba beberapa selector
-        balance_selectors = [
-            '[data-cy="token-balance"] [data-cy="token-amount"]',
-            '.MuiTypography-h3mono [data-cy="token-amount"]',
-            '[data-cy="balance"] [data-cy="token-amount"]'
-        ]
         
-        for selector in balance_selectors:
-            elem = soup.select_one(selector)
-            if elem and elem.text.strip():
-                balance = elem.text.strip()
-                break
+        # Cara 1: Cari berdasarkan struktur yang mengandung "SUP"
+        # Cari teks yang mengandung "SUP" dan ambil angka sebelumnya
+        all_text = soup.get_text()
+        sup_match = re.search(r'([\d.]+)\s*SUP', all_text)
+        if sup_match:
+            balance = sup_match.group(1)
+            print(f"   Balance (SUP): {balance}")
+        else:
+            # Cara 2: Cari elemen dengan data-cy="token-balance"
+            balance_container = soup.select_one('[data-cy="token-balance"]')
+            if balance_container:
+                # Cari semua angka dalam container, ambil yang pertama
+                numbers = re.findall(r'[\d.]+', balance_container.get_text())
+                if numbers:
+                    balance = numbers[0]
+                    print(f"   Balance (angka): {balance}")
+            else:
+                # Cara 3: Cari elemen yang berisi "SUP" di teksnya
+                sup_elements = soup.find_all(string=re.compile(r'SUP'))
+                for elem in sup_elements:
+                    parent = elem.find_parent()
+                    if parent:
+                        parent_text = parent.get_text()
+                        num_match = re.search(r'([\d.]+)\s*SUP', parent_text)
+                        if num_match:
+                            balance = num_match.group(1)
+                            break
         
-        # Clean balance (hapus koma, spasi)
-        balance = re.sub(r'[^\d.]', '', balance)
-        if not balance or balance == '':
+        # Pastikan balance adalah angka yang valid
+        try:
+            float(balance)
+        except ValueError:
             balance = "0"
         
-        # === Ambil Stream Distributions ===
+        # === AMBIL STREAM DISTRIBUTIONS ===
         streams = []
         rows = soup.select('tbody tr')
         
@@ -64,19 +81,22 @@ def fetch_wallet_data(wallet_address, agent_name):
                 else:
                     pool = pool_text[:20] if pool_text else "Unknown"
                 
-                # Amount received
-                amount = cols[1].get_text(strip=True)
-                amount = re.sub(r'[^\d.]', '', amount)
+                # Amount received (ambil angka)
+                amount_text = cols[1].get_text(strip=True)
+                amount_match = re.search(r'[\d.]+', amount_text)
+                amount = amount_match.group(0) if amount_match else "0"
                 
                 # Flow rate
                 flow = cols[2].get_text(strip=True)
                 
-                if amount and amount != '' and amount != '0':
+                if amount != "0" and amount != "":
                     streams.append({
                         "pool": pool,
                         "amount": amount,
                         "flow": flow
                     })
+        
+        print(f"   Streams found: {len(streams)}")
         
         return {
             "success": True,
@@ -104,7 +124,7 @@ def main():
     for name, wallet in WALLETS.items():
         data = fetch_wallet_data(wallet, name)
         results[name] = data
-        time.sleep(1)  # Delay untuk menghindari rate limit
+        time.sleep(1)
     
     # Generate JSON output
     output = {
@@ -117,15 +137,14 @@ def main():
         json.dump(output, f, indent=2)
     
     print("=" * 50)
-    print("✅ superfluid-data.json generated successfully!")
-    print(f"📊 Total agents: {len(WALLETS)}")
+    print("✅ superfluid-data.json generated!")
     
     # Print summary
     for name, data in results.items():
         if data['success']:
             print(f"   ✅ {name}: {data['balance']} SUP, {len(data['streams'])} streams")
         else:
-            print(f"   ❌ {name}: Failed - {data.get('error', 'Unknown')}")
+            print(f"   ❌ {name}: Failed")
 
 if __name__ == "__main__":
     main()
