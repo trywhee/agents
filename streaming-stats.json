@@ -1,29 +1,29 @@
 {
-  "timestamp": "2026-04-05T11:16:05.303116",
-  "token_price_usd": 0.00860101,
+  "timestamp": "2026-04-05T12:54:29.529062",
+  "token_price_usd": 0.00857427,
   "agents": {
     "Quantiva Intelligence": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     },
     "Nexora Analytics AI": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     },
     "DataQuant Pro": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     },
     "DataAnalyst Pro": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     },
     "InsightForge AI": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     },
     "StoryWeaver AI": {
-      "error": "HTTPSConnectionPool(host='subgraph.satsuma-prod.com', port=443): Max retries exceeded with url: /3e3c05c7d685/superfluid-mainnet/api (Caused by NameResolutionError(\"HTTPSConnection(host='subgraph.satsuma-prod.com', port=443): Failed to resolve 'subgraph.satsuma-prod.com' ([Errno -3] Temporary failure in name resolution)\"))",
+      "error": "HTTPSConnectionPool(host='error.thegraph.com', port=443): Max retries exceeded with url: /apierror.json (Caused by NameResolutionError(\"HTTPSConnection(host='error.thegraph.com', port=443): Failed to resolve 'error.thegraph.com' ([Errno -5] No address associated with hostname)\"))",
       "status": "error"
     }
   }
