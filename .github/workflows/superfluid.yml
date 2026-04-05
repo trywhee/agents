@@ -1,0 +1,40 @@
+name: Fetch Superfluid Data
+
+on:
+  schedule:
+    # Jalankan setiap 6 jam (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  # Bisa di-run manual dari tab Actions
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-superfluid:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+      
+      - name: Run fetch script
+        run: python fetch_superfluid.py
+      
+      - name: Commit and push if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🔄 Auto-update Superfluid streaming data"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          file_pattern: "superfluid-data.json"
