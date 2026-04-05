@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-04-05T10:40:42.625332",
+  "total_agents": 6,
+  "agents": [
+    {
+      "name": "Quantiva Intelligence",
+      "id": 22524,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:29.616331",
+      "status": "success"
+    },
+    {
+      "name": "Nexora Analytics AI",
+      "id": 22497,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:31.766781",
+      "status": "success"
+    },
+    {
+      "name": "DataQuant Pro",
+      "id": 22455,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:34.124805",
+      "status": "success"
+    },
+    {
+      "name": "DataAnalyst Pro",
+      "id": 22300,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:36.290732",
+      "status": "success"
+    },
+    {
+      "name": "InsightForge AI",
+      "id": 22398,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:38.419571",
+      "status": "success"
+    },
+    {
+      "name": "StoryWeaver AI",
+      "id": 30502,
+      "overall_score": "N/A",
+      "feedback_count": "N/A",
+      "rank": "N/A",
+      "last_updated": "2026-04-05T10:40:40.624138",
+      "status": "success"
+    }
+  ]
+}
