@@ -20,7 +20,7 @@
         
         .agent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 24px;
         }
         
@@ -69,6 +69,17 @@
         .score-high { background: #4ade8020; color: #4ade80; border: 1px solid #4ade80; }
         .score-mid { background: #ffaa4420; color: #ffaa44; border: 1px solid #ffaa44; }
         
+        .stream-item {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.75rem;
+        }
+        .stream-pool { color: #4ade80; font-family: monospace; }
+        .stream-amount { color: #ffaa44; }
+        .stream-flow { color: #888; }
+        
         .note {
             margin-top: 32px;
             padding: 16px;
@@ -105,6 +116,7 @@
             background: #4ade80;
             color: #0a0a0a;
         }
+        .loading-text { color: #888; font-size: 0.7rem; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -113,8 +125,8 @@
             📊 Agent Dashboard 
             <span class="badge">6 Agents</span>
         </h1>
-        <p class="subtitle">Statistik dari 8004scan (update manual berkala)</p>
-        <button class="update-btn" onclick="openEditSheet()">✏️ Edit Data (Update Manual)</button>
+        <p class="subtitle">Statistik dari 8004scan + Streaming dari Superfluid</p>
+        <button class="update-btn" onclick="openEditSheet()">✏️ Edit Data 8004scan</button>
         <div class="last-update" id="lastUpdate">Last update: 5 April 2026</div>
         
         <div class="agent-grid" id="agentGrid">
@@ -122,39 +134,86 @@
         </div>
         
         <div class="note">
-            📌 <strong>Cara Update:</strong> Klik tombol "Edit Data", ubah nilai score/feedback/rank sesuai data terbaru dari 
-            <a href="https://8004scan.io/" target="_blank" style="color:#4ade80;">8004scan.io</a>, lalu simpan.<br>
-            Data disimpan di localStorage browser kamu.
+            📌 <strong>Cara Update 8004scan:</strong> Klik tombol "Edit Data 8004scan" di atas.<br>
+            💧 <strong>Data Superfluid</strong> diambil otomatis dari <a href="https://app.superfluid.org/" target="_blank" style="color:#4ade80;">app.superfluid.org</a> menggunakan proxy CORS.
         </div>
     </div>
 
     <script>
-        // DEFAULT DATA (isi dengan data terbaru dari 8004scan + WALLET ADDRESS)
+        // ========== DATA AGENT ==========
         const DEFAULT_AGENTS = [
-            { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234", status: "active", chain: "base" },
-            { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7", score: "68.50", avgScore: "4.5", feedback: "8", rank: "#312", status: "active", chain: "base" },
-            { id: 22455, name: "DataQuant Pro", wallet: "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948", score: "65.20", avgScore: "4.3", feedback: "6", rank: "#401", status: "active", chain: "base" },
-            { id: 22300, name: "DataAnalyst Pro", wallet: "0xe16b3f9617aae564c7314bb555c052ce6524fd3f", score: "45.38", avgScore: "4.4", feedback: "2", rank: "#832", status: "active", chain: "base" },
-            { id: 22398, name: "InsightForge AI", wallet: "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32", score: "58.90", avgScore: "4.2", feedback: "5", rank: "#445", status: "active", chain: "base" },
-            { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940", status: "active", chain: "base" }
+            { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234" },
+            { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7", score: "68.50", avgScore: "4.5", feedback: "8", rank: "#312" },
+            { id: 22455, name: "DataQuant Pro", wallet: "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948", score: "65.20", avgScore: "4.3", feedback: "6", rank: "#401" },
+            { id: 22300, name: "DataAnalyst Pro", wallet: "0xe16b3f9617aae564c7314bb555c052ce6524fd3f", score: "45.38", avgScore: "4.4", feedback: "2", rank: "#832" },
+            { id: 22398, name: "InsightForge AI", wallet: "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32", score: "58.90", avgScore: "4.2", feedback: "5", rank: "#445" },
+            { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        // Load data dari localStorage atau default
         let agentsData = JSON.parse(localStorage.getItem('agentStats')) || DEFAULT_AGENTS;
 
         function saveToLocal() {
             localStorage.setItem('agentStats', JSON.stringify(agentsData));
         }
 
-        function renderGrid() {
+        // ========== AMBIL DATA SUPERFLUID PAKAI PROXY (BYPASS CORS) ==========
+        async function fetchSuperfluidData(wallet) {
+            // Gunakan proxy CORS gratis untuk ambil HTML
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://app.superfluid.org/?view=' + wallet)}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                const html = await response.text();
+                
+                // Parse HTML dengan DOMParser
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Ambil balance dari data-cy
+                let balance = "0";
+                const balanceEl = doc.querySelector('[data-cy="token-balance"] [data-cy="token-amount"]');
+                if (balanceEl) {
+                    balance = balanceEl.textContent.trim();
+                }
+                
+                // Ambil stream distributions dari tabel
+                const streams = [];
+                const rows = doc.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cols = row.querySelectorAll('td');
+                    if (cols.length >= 3) {
+                        const poolText = cols[0]?.textContent?.trim() || "";
+                        const poolMatch = poolText.match(/0x[a-fA-F0-9]+/);
+                        const pool = poolMatch ? poolMatch[0].substring(0, 10) + "..." + poolMatch[0].substring(34) : poolText.substring(0, 15);
+                        const amount = cols[1]?.textContent?.trim() || "0";
+                        const flow = cols[2]?.textContent?.trim() || "0";
+                        
+                        if (amount !== "0" && amount !== "Amount Received") {
+                            streams.push({ pool, amount, flow });
+                        }
+                    }
+                });
+                
+                return { balance, streams, success: true };
+            } catch (error) {
+                console.error(`Error fetching ${wallet}:`, error);
+                return { balance: "0", streams: [], success: false, error: error.message };
+            }
+        }
+
+        // ========== RENDER DASHBOARD LENGKAP ==========
+        async function renderDashboard() {
             const grid = document.getElementById('agentGrid');
-            grid.innerHTML = agentsData.map(agent => {
-                // Format wallet untuk ditampilkan (shortened)
+            grid.innerHTML = '<div style="text-align: center; grid-column: 1/-1;">🔄 Memuat data agent dan streaming...</div>';
+            
+            // Tampilkan semua agent dengan loading state
+            let cardsHtml = '';
+            for (const agent of agentsData) {
                 const shortWallet = agent.wallet ? `${agent.wallet.substring(0, 10)}...${agent.wallet.substring(38)}` : 'No wallet';
                 const superfluidUrl = agent.wallet ? `https://app.superfluid.org/?view=${agent.wallet}` : '#';
                 
-                return `
-                <div class="agent-card">
+                cardsHtml += `
+                <div class="agent-card" id="card-${agent.id}">
                     <div class="agent-name">${agent.name}</div>
                     <div class="agent-id">Agent ID: ${agent.id} | Base Chain</div>
                     <div class="agent-wallet">💰 Wallet: ${shortWallet}</div>
@@ -178,22 +237,60 @@
                         </div>
                     </div>
                     
-                    <div class="score-badge ${agent.score >= 60 ? 'score-high' : 'score-mid'}">
-                        ${agent.id ? '✅ Terdaftar di 8004scan' : '⏳ Belum terdaftar'}
+                    <div class="score-badge ${parseFloat(agent.score) >= 60 ? 'score-high' : 'score-mid'}">
+                        ✅ Terdaftar di 8004scan
                     </div>
+                    
+                    <div id="stream-${agent.id}" class="loading-text">🔄 Loading Superfluid data...</div>
                     
                     <a href="${superfluidUrl}" target="_blank" class="superfluid-link">
                         💧 View on Superfluid
                     </a>
                 </div>
-            `}).join('');
+                `;
+            }
+            grid.innerHTML = cardsHtml;
+            
+            // Ambil data Superfluid untuk setiap agent (parallel)
+            for (const agent of agentsData) {
+                if (!agent.wallet) continue;
+                
+                const streamDiv = document.getElementById(`stream-${agent.id}`);
+                if (!streamDiv) continue;
+                
+                const data = await fetchSuperfluidData(agent.wallet);
+                
+                if (data.success && data.balance !== "0") {
+                    let streamsHtml = `<div style="margin-top: 12px;"><strong>💧 Streaming Data:</strong><br>Balance: ${data.balance} SUP</div>`;
+                    
+                    if (data.streams.length > 0) {
+                        streamsHtml += `<div style="margin-top: 8px;"><strong>📡 Active Streams:</strong></div>`;
+                        data.streams.forEach(s => {
+                            streamsHtml += `
+                            <div class="stream-item">
+                                <span class="stream-pool">Pool: ${s.pool}</span><br>
+                                <span class="stream-amount">Amount: ${s.amount}</span><br>
+                                <span class="stream-flow">Flow: ${s.flow}</span>
+                            </div>`;
+                        });
+                    } else {
+                        streamsHtml += `<div class="loading-text" style="margin-top: 8px;">⏸ No active streams</div>`;
+                    }
+                    streamDiv.innerHTML = streamsHtml;
+                } else {
+                    streamDiv.innerHTML = `<div class="loading-text">⚠️ No SUP balance or unable to fetch</div>`;
+                }
+            }
+            
+            document.getElementById('lastUpdate').innerHTML = `Last update: ${new Date().toLocaleString()}`;
         }
 
+        // ========== EDIT DATA 8004SCAN ==========
         function openEditSheet() {
             let currentData = agentsData.map(a => `${a.id}|${a.score}|${a.avgScore}|${a.feedback}|${a.rank}`).join(',\n');
             
             let newData = prompt(
-                "📝 UPDATE DATA AGENT\n\n" +
+                "📝 UPDATE DATA AGENT (8004scan)\n\n" +
                 "Format: agent_id|score|avgScore|feedback|rank\n" +
                 "Pisahkan dengan koma untuk multiple agent.\n\n" +
                 "Data saat ini:\n" + currentData + "\n\n" +
@@ -225,14 +322,13 @@
                     }
                 }
                 saveToLocal();
-                renderGrid();
-                document.getElementById('lastUpdate').innerHTML = `Last update: ${new Date().toLocaleString()}`;
-                alert("✅ Data berhasil diupdate!");
+                renderDashboard();
+                alert("✅ Data 8004scan berhasil diupdate!");
             }
         }
 
-        // Render awal
-        renderGrid();
+        // Jalankan render
+        renderDashboard();
     </script>
 </body>
 </html>
