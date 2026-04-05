@@ -12,6 +12,7 @@ AGENTS = [
     {"id": 22455, "name": "DataQuant Pro"},
     {"id": 22300, "name": "DataAnalyst Pro"},
     {"id": 22398, "name": "InsightForge AI"},
+    {"id": 30502, "name": "StoryWeaver AI"},
     # StoryWeaver AI belum punya ID, nanti tambahkan setelah mint
 ]
 
