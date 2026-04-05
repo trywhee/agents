@@ -206,7 +206,10 @@
                 // Format streaming HTML
                 let streamingHtml = '';
                 if (sfData) {
-                    if (sfData.success && sfData.balance !== "0") {
+                    // Cek apakah balance valid (bukan "0" dan bukan error)
+                    const hasValidBalance = sfData.success && sfData.balance && sfData.balance !== "0" && parseFloat(sfData.balance) > 0;
+                    
+                    if (hasValidBalance) {
                         streamingHtml = `
                             <div class="stream-section">
                                 <div class="balance-text">💧 Balance: ${sfData.balance} SUP</div>
