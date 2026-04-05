@@ -1,36 +1,36 @@
 import requests
 import json
-import os
+import time
 from datetime import datetime
 
-# ========== KONFIGURASI ==========
-# GANTI DENGAN WALLET AGEN KAMU
+# ========== KONFIGURASI WALLET AGEN (SUDAH KAMU ISI) ==========
 AGENT_WALLETS = {
     "Quantiva Intelligence": "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7",
-    "Nexora Analytics AI": "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7",  # GANTI
-    "DataQuant Pro": "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948",         # GANTI
+    "Nexora Analytics AI": "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7",
+    "DataQuant Pro": "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948",
     "DataAnalyst Pro": "0xe16b3f9617aae564c7314bb555c052ce6524fd3f",
-    "InsightForge AI": "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32",       # GANTI
+    "InsightForge AI": "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32",
     "StoryWeaver AI": "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058",
 }
 
-# Konfigurasi Superfluid (Base Chain)
-SUPERFLUID_API = "https://subgraph.satsuma-prod.com/3e3c05c7d685/superfluid-mainnet/api"
-TOKEN_ADDRESS = "0xa69f80524381275A7fFdb3AE01c54150644c8792"  # GANTI dengan address token SUP di Base
-# =================================
+# ========== ENDPOINT SUPERFLUID YANG VALID ==========
+# Menggunakan GraphQL endpoint publik Superfluid melalui The Graph
+SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-base-mainnet"
+
+# Alamat token SUP (Super Token) di jaringan Base
+SUP_TOKEN_ADDRESS = "0xa69f80524381275a7ffdb3ae01c54150644c8792".lower()
+# ====================================================
 
 def get_superfluid_stats(wallet_address):
     """Ambil data balance & net flow dari Superfluid subgraph"""
     
+    # Query khusus untuk token SUP saja
     query = """
     {
       account(id: "%s") {
-        id
-        tokenBalances {
+        tokenBalances(where: {token: "%s"}) {
           token {
-            id
             symbol
-            name
             decimals
           }
           totalBalance
@@ -38,11 +38,11 @@ def get_superfluid_stats(wallet_address):
         }
       }
     }
-    """ % wallet_address.lower()
+    """ % (wallet_address.lower(), SUP_TOKEN_ADDRESS)
     
     try:
         response = requests.post(
-            SUPERFLUID_API,
+            SUBGRAPH_URL,
             json={"query": query},
             headers={"Content-Type": "application/json"},
             timeout=30
@@ -50,40 +50,49 @@ def get_superfluid_stats(wallet_address):
         
         if response.status_code == 200:
             data = response.json()
-            account = data.get("data", {}).get("account")
+            balances = data.get("data", {}).get("account", {}).get("tokenBalances", [])
             
-            if account and account.get("tokenBalances"):
-                balance_data = account["tokenBalances"][0]
-                balance_raw = int(balance_data["totalBalance"])
-                decimals = int(balance_data["token"]["decimals"])
-                balance = balance_raw / (10 ** decimals)
-                
-                net_flow_raw = int(balance_data["totalNetFlowRate"])
-                net_flow_per_month = net_flow_raw * 30 * 24 * 3600 / (10 ** decimals)
-                
+            if not balances:
                 return {
-                    "token_symbol": balance_data["token"]["symbol"],
-                    "balance": round(balance, 4),
-                    "net_flow_per_month": round(net_flow_per_month, 4),
-                    "status": "active" if net_flow_per_month != 0 else "idle"
+                    "token_symbol": "SUP",
+                    "balance": 0,
+                    "net_flow_per_month": 0,
+                    "status": "idle",
+                    "note": "No SUP balance found"
                 }
-        
-        return {"error": f"HTTP {response.status_code}", "status": "error"}
+            
+            balance_data = balances[0]
+            balance_raw = int(balance_data["totalBalance"])
+            decimals = int(balance_data["token"]["decimals"])
+            balance = balance_raw / (10 ** decimals)
+            
+            net_flow_raw = int(balance_data["totalNetFlowRate"])
+            # Konversi flow rate per detik ke per bulan (30 hari)
+            net_flow_per_month = net_flow_raw * 30 * 24 * 3600 / (10 ** decimals)
+            
+            return {
+                "token_symbol": balance_data["token"]["symbol"],
+                "balance": round(balance, 4),
+                "net_flow_per_month": round(net_flow_per_month, 4),
+                "status": "active" if net_flow_per_month != 0 else "idle"
+            }
+        else:
+            return {"error": f"HTTP {response.status_code}", "status": "error"}
         
     except Exception as e:
         return {"error": str(e), "status": "error"}
 
-def get_token_price(token_symbol):
-    """Ambil harga token dari CoinGecko (opsional)"""
+def get_token_price():
+    """Ambil harga SUP dari CoinGecko"""
     try:
-        url = f"https://api.coingecko.com/api/v3/simple/price?ids=superfluid&vs_currencies=usd"
+        url = "https://api.coingecko.com/api/v3/simple/price?ids=superfluid&vs_currencies=usd"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
-            return data.get("superfluid", {}).get("usd", 0)
+            return data.get("superfluid", {}).get("usd", 0.0086)
     except:
         pass
-    return 0
+    return 0.0086  # Harga default jika API gagal
 
 def generate_markdown(stats, price):
     """Generate laporan markdown"""
@@ -92,7 +101,7 @@ def generate_markdown(stats, price):
     markdown = f"""# 💰 Superfluid Streaming Stats
 
 **Last Update:** {timestamp} UTC
-**Token Price:** ${price:.4f} (SUP)
+**SUP Price:** ${price:.4f}
 
 | Agent | Balance | Balance (USD) | Net Flow / Month | Status |
 |-------|---------|---------------|------------------|--------|
@@ -114,20 +123,18 @@ def generate_markdown(stats, price):
 
 def main():
     print(f"🚀 Fetching Superfluid stats for {len(AGENT_WALLETS)} agents...")
+    print(f"📡 Using endpoint: {SUBGRAPH_URL}")
     
-    # Ambil harga token SUP
-    price = get_token_price("superfluid")
+    price = get_token_price()
+    print(f"💰 SUP Price: ${price:.4f}")
     
-    # Ambil data untuk setiap wallet
     results = {}
     for name, wallet in AGENT_WALLETS.items():
-        if wallet and not wallet.startswith("0x..."):
-            print(f"📡 Checking {name}...")
-            results[name] = get_superfluid_stats(wallet)
-        else:
-            results[name] = {"error": "Wallet not configured", "status": "pending"}
+        print(f"🔍 Checking {name} ({wallet})...")
+        results[name] = get_superfluid_stats(wallet)
+        time.sleep(1)  # Delay untuk menghindari rate limit
     
-    # Generate markdown dan JSON
+    # Generate files
     markdown = generate_markdown(results, price)
     json_output = {
         "timestamp": datetime.now().isoformat(),
@@ -141,8 +148,10 @@ def main():
     with open("streaming-stats.json", "w", encoding="utf-8") as f:
         json.dump(json_output, f, indent=2)
     
-    print("\n✅ Reports generated: STREAMING_STATS.md and streaming-stats.json")
-    print(markdown)
+    print("\n✅ Reports generated:")
+    print("   - STREAMING_STATS.md")
+    print("   - streaming-stats.json")
+    print("\n" + markdown)
 
 if __name__ == "__main__":
     main()
