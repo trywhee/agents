@@ -201,5 +201,80 @@
         // Render awal
         renderGrid();
     </script>
+    <!-- SECTION: STREAMING STATS DARI SUPERFLUID -->
+<div style="margin-top: 40px;">
+    <h2 style="color: #4ade80;">💰 Superfluid Streaming Revenue</h2>
+    <div id="streamingGrid" class="agent-grid" style="margin-top: 20px;">
+        Loading streaming data...
+    </div>
+</div>
+
+<script>
+    async function loadStreamingStats() {
+        try {
+            const response = await fetch('streaming-stats.json');
+            const data = await response.json();
+            
+            const grid = document.getElementById('streamingGrid');
+            const agents = data.agents;
+            const price = data.token_price_usd;
+            
+            grid.innerHTML = Object.keys(agents).map(name => {
+                const agent = agents[name];
+                if (agent.error) {
+                    return `
+                        <div class="agent-card">
+                            <div class="agent-name">${name}</div>
+                            <div class="status">⚠️ Error</div>
+                            <div class="description">${agent.error}</div>
+                        </div>
+                    `;
+                }
+                
+                const balanceUsd = (agent.balance * price).toFixed(2);
+                const flowUsd = (agent.net_flow_per_month * price).toFixed(2);
+                const statusColor = agent.status === 'active' ? '#4ade80' : '#888';
+                
+                return `
+                    <div class="agent-card">
+                        <div class="agent-name">${name}</div>
+                        <div class="agent-id">Token: ${agent.token_symbol}</div>
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-value">${agent.balance} ${agent.token_symbol}</div>
+                                <div class="stat-label">Balance</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$${balanceUsd}</div>
+                                <div class="stat-label">Balance (USD)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">+${agent.net_flow_per_month} ${agent.token_symbol}/mo</div>
+                                <div class="stat-label">Net Flow</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$${flowUsd}/mo</div>
+                                <div class="stat-label">Monthly Revenue</div>
+                            </div>
+                        </div>
+                        <div class="score-badge" style="background: ${statusColor}20; color: ${statusColor}; border-color: ${statusColor};">
+                            ${agent.status === 'active' ? '✅ Streaming Active' : '⏸ No Active Stream'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            document.getElementById('streamingGrid').innerHTML = `
+                <div class="agent-card">
+                    <div class="agent-name">⚠️ Unable to load streaming data</div>
+                    <div class="description">Make sure streaming-stats.json exists. Run GitHub Actions first.</div>
+                </div>
+            `;
+        }
+    }
+    
+    // Panggil setelah load stats biasa
+    loadStreamingStats();
+</script>
 </body>
 </html>
