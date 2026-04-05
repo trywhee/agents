@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard - 8004scan Stats</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: #4ade80; margin-bottom: 8px; }
+        .subtitle { color: #888; margin-bottom: 32px; }
+        .last-update { font-size: 12px; color: #666; margin-bottom: 20px; }
+        
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .agent-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #333;
+            transition: transform 0.2s;
+        }
+        .agent-card:hover { transform: translateY(-4px); border-color: #4ade80; }
+        
+        .agent-name { font-size: 1.4rem; font-weight: bold; color: #4ade80; margin-bottom: 4px; }
+        .agent-id { font-size: 0.75rem; color: #888; margin-bottom: 16px; font-family: monospace; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: #4ade80; }
+        .stat-label { font-size: 0.7rem; color: #888; margin-top: 4px; }
+        
+        .score-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+        .score-high { background: #4ade8020; color: #4ade80; border: 1px solid #4ade80; }
+        .score-mid { background: #ffaa4420; color: #ffaa44; border: 1px solid #ffaa44; }
+        .score-low { background: #ff444420; color: #ff4444; border: 1px solid #ff4444; }
+        
+        .refresh-btn {
+            background: #4ade80;
+            color: #0a0a0a;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover { opacity: 0.8; }
+        
+        .note {
+            margin-top: 32px;
+            padding: 16px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Agent Dashboard</h1>
+        <p class="subtitle">Statistik & Ranking dari 8004scan</p>
+        <button class="refresh-btn" onclick="fetchAllStats()">🔄 Refresh Semua</button>
+        <div class="last-update" id="lastUpdate">Last update: -</div>
+        
+        <div class="agent-grid" id="agentGrid">
+            <div style="text-align: center; grid-column: 1/-1;">Loading stats from 8004scan...</div>
+        </div>
+        
+        <div class="note">
+            ⚠️ Data diambil dari API publik 8004scan. <br>
+            Perlu diingat: API memiliki rate limit 10 request/menit untuk akses anonim.<br>
+            Jika gagal load, tunggu sebentar lalu refresh.
+        </div>
+    </div>
+
+    <script>
+        const AGENTS = [
+            { id: 22524, name: "Quantiva Intelligence", chain: "base" },
+            { id: 22497, name: "Nexora Analytics AI", chain: "base" },
+            { id: 22455, name: "DataQuant Pro", chain: "base" },
+            { id: 22300, name: "DataAnalyst Pro", chain: "base" },
+            { id: 22398, name: "InsightForge AI", chain: "base" }
+        ];
+
+        async function fetchAgentStats(agent) {
+            try {
+                // Coba ambil dari API publik 8004scan
+                const url = `https://8004scan.io/api/v1/public/agents/${agent.chain}/${agent.id}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return {
+                    success: true,
+                    name: data.name || agent.name,
+                    score: data.overallScore || data.score || 'N/A',
+                    avgScore: data.averageScore || data.avgScore || 'N/A',
+                    feedbackCount: data.feedbackCount || data.totalFeedback || 'N/A',
+                    rank: data.rank || 'N/A',
+                    status: data.status || 'active'
+                };
+            } catch (error) {
+                console.error(`Error fetching ${agent.name}:`, error);
+                return {
+                    success: false,
+                    name: agent.name,
+                    error: error.message,
+                    score: '?',
+                    avgScore: '?',
+                    feedbackCount: '?',
+                    rank: '?'
+                };
+            }
+        }
+
+        async function fetchAllStats() {
+            const grid = document.getElementById('agentGrid');
+            grid.innerHTML = '<div style="text-align: center; grid-column: 1/-1;">🔄 Mengambil data dari 8004scan...</div>';
+            
+            const results = [];
+            for (const agent of AGENTS) {
+                const stats = await fetchAgentStats(agent);
+                results.push(stats);
+                // Rate limit protection: delay 1 detik antar request
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            
+            renderGrid(results);
+            document.getElementById('lastUpdate').innerHTML = `Last update: ${new Date().toLocaleString()}`;
+        }
+
+        function getScoreClass(score) {
+            if (score === 'N/A' || score === '?') return 'score-mid';
+            const num = parseFloat(score);
+            if (num >= 70) return 'score-high';
+            if (num >= 50) return 'score-mid';
+            return 'score-low';
+        }
+
+        function renderGrid(agents) {
+            const grid = document.getElementById('agentGrid');
+            grid.innerHTML = agents.map(agent => `
+                <div class="agent-card">
+                    <div class="agent-name">${agent.name}</div>
+                    <div class="agent-id">Agent ID: ${AGENTS.find(a => a.name === agent.name)?.id || '?'}</div>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value">${agent.score}</div>
+                            <div class="stat-label">Overall Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agent.avgScore}</div>
+                            <div class="stat-label">Avg Score (5.0)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agent.feedbackCount}</div>
+                            <div class="stat-label">Total Feedback</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agent.rank}</div>
+                            <div class="stat-label">Rank</div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-badge ${getScoreClass(agent.score)}">
+                        ${agent.success ? '✅ Data from 8004scan' : '⚠️ ' + agent.error}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Auto load saat halaman dibuka
+        fetchAllStats();
+    </script>
+</body>
+</html>
