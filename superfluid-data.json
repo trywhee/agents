@@ -1,131 +1,29 @@
 {
-  "timestamp": "2026-04-06T14:35:54.413056",
+  "timestamp": "2026-04-06T14:50:06.739073",
   "agents": {
     "Quantiva Intelligence": {
-      "balance": "1.400226",
-      "pools": [
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "1.440207",
+      "pools": []
     },
     "Nexora Analytics AI": {
-      "balance": "1.400320",
-      "pools": [
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "1.440301",
+      "pools": []
     },
     "DataQuant Pro": {
-      "balance": "1.170789",
-      "pools": [
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "1.204286",
+      "pools": []
     },
     "DataAnalyst Pro": {
-      "balance": "1.543083",
-      "pools": [
-        {
-          "poolAddress": "0x2d0a...b4ed",
-          "fullAddress": "0x2d0a4689b0c14ab6a6c8b881c4d61843067ab4ed",
-          "flowRate": "0",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0x7ad5...3448",
-          "fullAddress": "0x7ad5f68a8ee037172babc66a34a1b39ed45a3448",
-          "flowRate": "0",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xbe46...fccc",
-          "fullAddress": "0xbe468829e46b7fbfa4e7e82b297fd5a7b3a4fccc",
-          "flowRate": "0",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "1.583065",
+      "pools": []
     },
     "InsightForge AI": {
-      "balance": "14.490270",
-      "pools": [
-        {
-          "poolAddress": "0x72ab...2cf7",
-          "fullAddress": "0x72ab3a3459599bbd2ccde2db742565f8c50a2cf7",
-          "flowRate": "70271164021163400",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "14.862868",
+      "pools": []
     },
     "StoryWeaver AI": {
-      "balance": "12.708300",
-      "pools": [
-        {
-          "poolAddress": "0xc500...15b2",
-          "fullAddress": "0xc5006ec21d3292d72e5fbdda19cd90f48d9a15b2",
-          "flowRate": "14467592592580150",
-          "status": "Connected"
-        },
-        {
-          "poolAddress": "0xd0fd...632e",
-          "fullAddress": "0xd0fd005048b759a3b97fb0797f83636f9bf7632e",
-          "flowRate": "53736772486772150",
-          "status": "Connected"
-        }
-      ]
+      "balance": "12.748281",
+      "pools": []
     }
   }
 }
