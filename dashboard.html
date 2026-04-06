@@ -145,25 +145,22 @@
             📊 Agent Dashboard 
             <span class="badge" id="agentCount">6 Agents</span>
         </h1>
-        <p class="subtitle">Data SUP Balance & Streaming dari Superfluid Subgraph (Real-time)</p>
-        <button class="refresh-btn" onclick="fetchAllData()">🔄 Refresh Data</button>
-        <div class="last-update" id="lastUpdate">Loading data from subgraph...</div>
+        <p class="subtitle">Data SUP Balance & Streaming dari Superfluid (Auto-update via GitHub Actions)</p>
+        <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+        <div class="last-update" id="lastUpdate">Loading data...</div>
         
         <div class="agent-grid" id="agentGrid">
-            <div class="loading-text">🔄 Mengambil data dari Superfluid Subgraph...</div>
+            <div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>
         </div>
         
         <div class="note">
-            💧 <strong>Data real-time dari Superfluid Subgraph (Base Mainnet)</strong><br>
+            💧 <strong>Data diperbarui otomatis setiap 30 menit via GitHub Actions</strong><br>
             📌 Menampilkan balance SUP, total inflow rate, dan total SUP diterima dari setiap pool.<br>
             🔗 Klik "View on Superfluid" untuk detail lebih lengkap.
         </div>
     </div>
 
     <script>
-        // ========== PROXY URL VERCEL ANDA ==========
-        const PROXY_URL = "https://superfluid-proxy-oeyw.vercel.app/api/proxy";
-        
         // ========== DATA AGENT (dari 8004scan) ==========
         const AGENTS = [
             { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234" },
@@ -174,118 +171,41 @@
             { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        // ========== QUERY SUBGRAPH UNTUK 1 WALLET ==========
-        function buildQuery(walletAddress) {
-            return `
-            query GetAgentData {
-                account(id: "${walletAddress.toLowerCase()}") {
-                    id
-                    tokenBalances(where: { token_: { symbol: "SUPx" } }) {
-                        balance
-                        totalInflowRate
-                        token {
-                            symbol
-                        }
-                    }
-                    subscriptions {
-                        index {
-                            id
-                        }
-                        totalAmountReceivedUntilUpdatedAt
-                        units
-                        approved
-                    }
-                }
-            }
-            `;
-        }
-
-        // ========== FETCH DATA DARI PROXY UNTUK 1 AGENT ==========
-        async function fetchAgentData(agent) {
-            try {
-                const query = buildQuery(agent.wallet);
-                
-                const response = await fetch(PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const result = await response.json();
-                const account = result.data?.account;
-                
-                if (!account) {
-                    return { success: false, error: "Agent not found in subgraph" };
-                }
-                
-                // Parse balance dan flow rate
-                let balance = "0";
-                let inflowRate = "0";
-                if (account.tokenBalances && account.tokenBalances.length > 0) {
-                    const rawBalance = account.tokenBalances[0].balance;
-                    const rawInflow = account.tokenBalances[0].totalInflowRate;
-                    balance = (parseFloat(rawBalance) / 1e18).toFixed(6);
-                    const monthlyRate = (parseFloat(rawInflow) / 1e18) * 30 * 24 * 3600;
-                    inflowRate = monthlyRate.toFixed(2);
-                }
-                
-                // Parse subscriptions (pools)
-                const pools = [];
-                if (account.subscriptions && account.subscriptions.length > 0) {
-                    for (const sub of account.subscriptions) {
-                        if (sub.approved && parseFloat(sub.totalAmountReceivedUntilUpdatedAt) > 0) {
-                            const amountReceived = (parseFloat(sub.totalAmountReceivedUntilUpdatedAt) / 1e18).toFixed(4);
-                            pools.push({
-                                poolAddress: sub.index.id,
-                                totalReceived: amountReceived,
-                                units: sub.units
-                            });
-                        }
-                    }
-                }
-                
-                return {
-                    success: true,
-                    balance: balance,
-                    inflowRate: inflowRate,
-                    pools: pools,
-                    hasStreams: pools.length > 0
-                };
-                
-            } catch (error) {
-                console.error(`Error fetching ${agent.name}:`, error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== FETCH SEMUA AGENT ==========
-        async function fetchAllData() {
+        // ========== AMBIL DATA DARI superfluid-data.json ==========
+        async function loadData() {
             const grid = document.getElementById('agentGrid');
-            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari Superfluid Subgraph...</div>';
+            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>';
             document.getElementById('lastUpdate').innerHTML = '⏳ Sedang mengambil data...';
             
-            const results = [];
-            for (const agent of AGENTS) {
-                const sfData = await fetchAgentData(agent);
-                results.push({ agent, sfData });
-                // Delay kecil agar tidak kena rate limit
-                await new Promise(r => setTimeout(r, 200));
+            try {
+                // Tambah timestamp biar tidak kena cache
+                const response = await fetch('superfluid-data.json?v=' + Date.now());
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} - File belum ada atau error`);
+                }
+                
+                const data = await response.json();
+                renderDashboard(data);
+                
+                const updateTime = data.timestamp ? new Date(data.timestamp).toLocaleString() : 'unknown';
+                document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateTime} (via GitHub Actions)`;
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                grid.innerHTML = `<div class="error-text">⚠️ Gagal mengambil data: ${error.message}<br><br>Pastikan file superfluid-data.json sudah dibuat oleh GitHub Actions.</div>`;
+                document.getElementById('lastUpdate').innerHTML = `❌ Error: ${error.message}`;
             }
-            
-            renderDashboard(results);
-            document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${new Date().toLocaleString()} (dari Superfluid Subgraph)`;
         }
 
         // ========== RENDER DASHBOARD ==========
-        function renderDashboard(results) {
+        function renderDashboard(sfData) {
             const grid = document.getElementById('agentGrid');
             document.getElementById('agentCount').innerHTML = `${AGENTS.length} Agents`;
             
-            grid.innerHTML = results.map(({ agent, sfData }) => {
+            const agentsData = sfData.agents || {};
+            
+            grid.innerHTML = AGENTS.map(agent => {
                 const shortWallet = agent.wallet ? `${agent.wallet.substring(0, 10)}...${agent.wallet.substring(38)}` : 'No wallet';
                 const superfluidUrl = `https://app.superfluid.org/token/base/0xa69f80524381275a7ffdb3ae01c54150644c8792?view=${agent.wallet}`;
                 
@@ -293,21 +213,28 @@
                 if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
                 else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
+                // Ambil data SUP dari hasil fetch
+                const sup = agentsData[agent.name] || {};
+                const hasData = sup && !sup.error;
+                const balance = hasData ? sup.balance : '0';
+                const inflowRate = hasData ? sup.inflowRate : '0';
+                const pools = hasData ? sup.pools : [];
+                
                 let streamingHtml = '';
-                if (sfData.success) {
-                    const hasValidBalance = parseFloat(sfData.balance) > 0 || sfData.hasStreams;
+                if (hasData) {
+                    const hasValidBalance = parseFloat(balance) > 0 || pools.length > 0;
                     
                     if (hasValidBalance) {
                         streamingHtml = `
                             <div class="stream-section">
-                                <div class="balance-text">💧 SUP Balance: ${sfData.balance} SUP</div>
-                                <div class="flowrate-text">📈 Total Inflow Rate: +${sfData.inflowRate} SUP/bulan</div>
-                                <div class="stream-title">📡 Pool Distributions (${sfData.pools.length} pool):</div>
+                                <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
+                                <div class="flowrate-text">📈 Total Inflow Rate: +${inflowRate} SUP/bulan</div>
+                                <div class="stream-title">📡 Pool Distributions (${pools.length} pool):</div>
                                 <div class="pool-list">
                         `;
                         
-                        if (sfData.pools.length > 0) {
-                            sfData.pools.forEach(pool => {
+                        if (pools.length > 0) {
+                            pools.forEach(pool => {
                                 const shortPool = `${pool.poolAddress.substring(0, 10)}...${pool.poolAddress.substring(34)}`;
                                 streamingHtml += `
                                     <div class="pool-item">
@@ -334,7 +261,7 @@
                 } else {
                     streamingHtml = `
                         <div class="stream-section">
-                            <div class="error-text">⚠️ Gagal mengambil data: ${sfData.error || 'unknown'}</div>
+                            <div class="error-text">⚠️ Data SUP belum tersedia</div>
                         </div>
                     `;
                 }
@@ -378,7 +305,7 @@
         }
 
         // ========== INIT ==========
-        fetchAllData();
+        loadData();
     </script>
 </body>
 </html>
