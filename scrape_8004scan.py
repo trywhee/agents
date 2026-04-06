@@ -73,7 +73,6 @@ def main():
         data = query_subgraph(agent["wallet"])
         results[agent["name"]] = data if data else {"error": "Failed to fetch"}
     
-    # Simpan ke file
     output = {
         "timestamp": datetime.utcnow().isoformat(),
         "agents": results
