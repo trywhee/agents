@@ -17,8 +17,6 @@
         .badge { background: #4ade8020; color: #4ade80; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
         .subtitle { color: #888; margin-bottom: 8px; }
         .last-update { font-size: 12px; color: #666; margin-bottom: 20px; }
-        .status-ok { color: #4ade80; }
-        .status-error { color: #ff4444; }
         .refresh-btn {
             background: #4ade80;
             color: #0a0a0a;
@@ -113,7 +111,6 @@
         .pool-item:last-child { border-bottom: none; }
         .pool-address { color: #4ade80; font-family: monospace; }
         .pool-amount { color: #ffaa44; float: right; }
-        .pool-flow { color: #888; font-size: 0.65rem; margin-top: 4px; }
         .superfluid-link {
             display: inline-block;
             margin-top: 12px;
@@ -164,8 +161,8 @@
     </div>
 
     <script>
-        // ========== ENDPOINT SUBGRAPH SUPERFLUID ==========
-        const SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-base-mainnet";
+        // ========== PROXY URL VERCEL ANDA ==========
+        const PROXY_URL = "https://superfluid-proxy-oeyw.vercel.app/api/proxy";
         
         // ========== DATA AGENT (dari 8004scan) ==========
         const AGENTS = [
@@ -203,11 +200,12 @@
             `;
         }
 
-        // ========== FETCH DATA DARI SUBGRAPH UNTUK 1 AGENT ==========
+        // ========== FETCH DATA DARI PROXY UNTUK 1 AGENT ==========
         async function fetchAgentData(agent) {
             try {
                 const query = buildQuery(agent.wallet);
-                const response = await fetch(SUBGRAPH_URL, {
+                
+                const response = await fetch(PROXY_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: query })
@@ -230,9 +228,7 @@
                 if (account.tokenBalances && account.tokenBalances.length > 0) {
                     const rawBalance = account.tokenBalances[0].balance;
                     const rawInflow = account.tokenBalances[0].totalInflowRate;
-                    // Konversi dari wei (18 decimals) ke SUP
                     balance = (parseFloat(rawBalance) / 1e18).toFixed(6);
-                    // Inflow rate per detik -> per bulan (30 hari)
                     const monthlyRate = (parseFloat(rawInflow) / 1e18) * 30 * 24 * 3600;
                     inflowRate = monthlyRate.toFixed(2);
                 }
@@ -293,12 +289,10 @@
                 const shortWallet = agent.wallet ? `${agent.wallet.substring(0, 10)}...${agent.wallet.substring(38)}` : 'No wallet';
                 const superfluidUrl = `https://app.superfluid.org/token/base/0xa69f80524381275a7ffdb3ae01c54150644c8792?view=${agent.wallet}`;
                 
-                // Score badge class
                 let scoreClass = 'score-zero';
                 if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
                 else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
-                // Streaming section
                 let streamingHtml = '';
                 if (sfData.success) {
                     const hasValidBalance = parseFloat(sfData.balance) > 0 || sfData.hasStreams;
