@@ -13,8 +13,6 @@ AGENTS = [
 
 RPC_URL = "https://rpc-endpoints.superfluid.dev/base-mainnet"
 SUP_TOKEN = "0xa69f80524381275a7ffdb3ae01c54150644c8792"
-
-# ENDPOINT YANG BENAR (dari Inspect Element Anda)
 SUBGRAPH_URL = "https://base-mainnet.subgraph.x.superfluid.dev/"
 
 def get_sup_balance(wallet_address):
@@ -31,68 +29,116 @@ def get_sup_balance(wallet_address):
     return "0"
 
 def get_pool_distributions(wallet_address):
-    """Ambil daftar pool asli dari subgraph"""
-    query = """
-    {
-      account(id: "%s") {
-        subscriptions(where: {approved: true}) {
-          index {
-            id
-          }
+    """Query lengkap seperti yang digunakan dashboard Superfluid"""
+    query = f"""
+    {{
+      account(id: "{wallet_address.lower()}") {{
+        id
+        subscriptions(where: {{approved: true}}) {{
+          id
+          approved
+          units
+          totalUnits
           totalAmountReceivedUntilUpdatedAt
-        }
-      }
-    }
-    """ % wallet_address.lower()
+          totalAmountReceived
+          totalDistributionAmountReceived
+          index {{
+            id
+            indexId
+            totalUnits
+            token {{
+              id
+              symbol
+              name
+              decimals
+            }}
+          }}
+        }}
+      }}
+    }}
+    """
     
     try:
+        print(f"  Querying subgraph for {wallet_address[:10]}...")
         response = requests.post(SUBGRAPH_URL, json={"query": query}, timeout=30)
-        if response.status_code == 200:
-            data = response.json()
-            account_data = data.get("data", {}).get("account")
-            pools = []
-            
-            if account_data and "subscriptions" in account_data:
-                for sub in account_data["subscriptions"]:
-                    raw_address = sub["index"]["id"]
-                    short_address = f"{raw_address[:6]}...{raw_address[-4:]}"
-                    raw_amount = sub.get("totalAmountReceivedUntilUpdatedAt", "0")
-                    try:
-                        amount_received = float(raw_amount) / 1e18
-                        amount_formatted = f"{amount_received:.4f}"
-                    except:
-                        amount_formatted = "0"
-                    
-                    pools.append({
-                        "poolAddress": short_address,
-                        "totalReceived": amount_formatted,
-                        "flowRate": "+.../mo",
-                        "status": "Connected"
-                    })
-            return pools
-        else:
-            print(f"Subgraph Error: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"  HTTP Error: {response.status_code}")
             return []
+        
+        data = response.json()
+        
+        # Debug: print response structure
+        if "errors" in data:
+            print(f"  GraphQL Error: {data['errors']}")
+            return []
+        
+        account_data = data.get("data", {}).get("account")
+        if not account_data:
+            print(f"  No account data found")
+            return []
+        
+        subscriptions = account_data.get("subscriptions", [])
+        print(f"  Found {len(subscriptions)} subscriptions")
+        
+        pools = []
+        for sub in subscriptions:
+            index_data = sub.get("index", {})
+            if not index_data:
+                continue
+                
+            raw_address = index_data.get("id", "")
+            short_address = f"{raw_address[:6]}...{raw_address[-4:]}" if len(raw_address) > 10 else raw_address
+            
+            raw_amount = sub.get("totalAmountReceivedUntilUpdatedAt", "0")
+            try:
+                amount_received = float(raw_amount) / 1e18
+                amount_formatted = f"{amount_received:.4f}"
+            except:
+                amount_formatted = "0"
+            
+            # Hitung flow rate per bulan (estimasi dari units)
+            flow_rate = "+.../mo"
+            
+            pools.append({
+                "poolAddress": short_address,
+                "totalReceived": amount_formatted,
+                "flowRate": flow_rate,
+                "status": "Connected"
+            })
+            
+        return pools
+        
     except Exception as e:
-        print(f"Subgraph Exception: {e}")
+        print(f"  Exception: {str(e)}")
         return []
 
 def main():
+    print("Starting Superfluid data fetch...")
+    print(f"Subgraph URL: {SUBGRAPH_URL}")
+    print()
+    
     results = {}
     for agent in AGENTS:
-        print(f"Fetching {agent['name']}...")
+        print(f"Processing {agent['name']}...")
         balance = get_sup_balance(agent["wallet"])
         pools = get_pool_distributions(agent["wallet"])
+        
         results[agent["name"]] = {
             "balance": balance,
             "pools": pools
         }
-        print(f"  Balance: {balance} SUP, Pools: {len(pools)}")
+        print(f"  -> Balance: {balance} SUP, Pools: {len(pools)}\n")
     
-    output = {"timestamp": datetime.utcnow().isoformat(), "agents": results}
+    output = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "agents": results
+    }
+    
     with open("superfluid-data.json", "w") as f:
         json.dump(output, f, indent=2)
-    print("\n✅ Data saved!")
+    
+    print("✅ Data saved to superfluid-data.json")
 
 if __name__ == "__main__":
     main()
