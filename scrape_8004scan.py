@@ -1,137 +1,88 @@
-import requests
-from bs4 import BeautifulSoup
 import json
-import time
-import os
+import requests
 from datetime import datetime
 
-# Daftar agent yang mau dipantau (SUDAH TERMASUK STORYWEAVER)
+# Daftar agent (wallet address)
 AGENTS = [
-    {"id": 22524, "name": "Quantiva Intelligence"},
-    {"id": 22497, "name": "Nexora Analytics AI"},
-    {"id": 22455, "name": "DataQuant Pro"},
-    {"id": 22300, "name": "DataAnalyst Pro"},
-    {"id": 22398, "name": "InsightForge AI"},
-    {"id": 30502, "name": "StoryWeaver AI"},  # <-- WAJIB ADA
+    {"name": "Quantiva Intelligence", "wallet": "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7"},
+    {"name": "Nexora Analytics AI", "wallet": "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7"},
+    {"name": "DataQuant Pro", "wallet": "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948"},
+    {"name": "DataAnalyst Pro", "wallet": "0xe16b3f9617aae564c7314bb555c052ce6524fd3f"},
+    {"name": "InsightForge AI", "wallet": "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32"},
+    {"name": "StoryWeaver AI", "wallet": "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058"}
 ]
 
-def scrape_agent(agent_id, agent_name):
-    """Scrape data dari halaman 8004scan agent"""
-    url = f"https://8004scan.io/agents/base/{agent_id}"
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-    
+SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-base-mainnet"
+
+def query_subgraph(wallet_address):
+    query = f"""
+    {{
+        account(id: "{wallet_address.lower()}") {{
+            tokenBalances(where: {{ token_: {{ symbol: "SUPx" }} }}) {{
+                balance
+                totalInflowRate
+            }}
+            subscriptions {{
+                index {{ id }}
+                totalAmountReceivedUntilUpdatedAt
+                approved
+            }}
+        }}
+    }}
+    """
     try:
-        response = requests.get(url, headers=headers, timeout=30)
-        response.raise_for_status()
+        response = requests.post(SUBGRAPH_URL, json={"query": query})
+        data = response.json()
+        account = data.get("data", {}).get("account")
         
-        soup = BeautifulSoup(response.text, 'html.parser')
+        if not account:
+            return None
         
-        # === Extract Overall Score ===
-        overall_score = "N/A"
-        # Cari elemen yang mengandung teks "Overall Score"
-        score_label = soup.find(['div', 'p', 'span'], string=lambda x: x and 'Overall Score' in x)
-        if score_label:
-            parent = score_label.find_parent()
-            # Cari nilai di sibling atau child
-            value_elem = parent.find(class_=lambda x: x and ('value' in x or 'score' in x.lower()))
-            if value_elem:
-                overall_score = value_elem.text.strip()
+        # Parse balance
+        balance = "0"
+        inflow_rate = "0"
+        if account.get("tokenBalances"):
+            raw_balance = account["tokenBalances"][0]["balance"]
+            raw_inflow = account["tokenBalances"][0]["totalInflowRate"]
+            balance = f"{float(raw_balance) / 1e18:.6f}"
+            monthly_rate = (float(raw_inflow) / 1e18) * 30 * 24 * 3600
+            inflow_rate = f"{monthly_rate:.2f}"
         
-        # === Extract Total Feedback ===
-        feedback_count = "N/A"
-        fb_label = soup.find(['div', 'p', 'span'], string=lambda x: x and 'Total Feedback' in x)
-        if fb_label:
-            parent = fb_label.find_parent()
-            value_elem = parent.find(class_=lambda x: x and ('value' in x or 'count' in x.lower()))
-            if value_elem:
-                feedback_count = value_elem.text.strip()
-        
-        # === Extract Rank ===
-        rank = "N/A"
-        rank_label = soup.find(['div', 'p', 'span'], string=lambda x: x and 'Rank' in x)
-        if rank_label:
-            parent = rank_label.find_parent()
-            value_elem = parent.find(class_=lambda x: x and ('value' in x or 'rank' in x.lower()))
-            if value_elem:
-                rank = value_elem.text.strip()
+        # Parse pools
+        pools = []
+        for sub in account.get("subscriptions", []):
+            if sub.get("approved") and float(sub.get("totalAmountReceivedUntilUpdatedAt", 0)) > 0:
+                pools.append({
+                    "poolAddress": sub["index"]["id"],
+                    "totalReceived": f"{float(sub['totalAmountReceivedUntilUpdatedAt']) / 1e18:.4f}"
+                })
         
         return {
-            "name": agent_name,
-            "id": agent_id,
-            "overall_score": overall_score,
-            "feedback_count": feedback_count,
-            "rank": rank,
-            "last_updated": datetime.now().isoformat(),
-            "status": "success"
+            "balance": balance,
+            "inflowRate": inflow_rate,
+            "pools": pools
         }
-        
     except Exception as e:
-        print(f"⚠️ Error scraping {agent_name}: {str(e)}")
-        return {
-            "name": agent_name,
-            "id": agent_id,
-            "error": str(e),
-            "status": "failed",
-            "last_updated": datetime.now().isoformat()
-        }
-
-def generate_markdown(stats):
-    """Generate markdown report dari data"""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    markdown = f"""# 📊 Agent Stats Report
-
-**Last Update:** {timestamp} (UTC)
-
-| Agent | Agent ID | Overall Score | Total Feedback | Rank | Status |
-|-------|----------|---------------|----------------|------|--------|
-"""
-    
-    for stat in stats:
-        if stat['status'] == 'success':
-            markdown += f"| {stat['name']} | {stat['id']} | {stat['overall_score']} | {stat['feedback_count']} | {stat['rank']} | ✅ |\n"
-        else:
-            markdown += f"| {stat['name']} | {stat['id']} | - | - | - | ❌ Error |\n"
-    
-    markdown += f"""
----
-<sub>Auto-generated by GitHub Actions • {timestamp} UTC</sub>
-"""
-    return markdown
-
-def generate_json(stats):
-    """Generate JSON report"""
-    return json.dumps({
-        "timestamp": datetime.now().isoformat(),
-        "total_agents": len(stats),
-        "agents": stats
-    }, indent=2)
+        print(f"Error: {e}")
+        return None
 
 def main():
-    print(f"🚀 Starting scrape for {len(AGENTS)} agents...")
-    
-    results = []
+    results = {}
     for agent in AGENTS:
-        print(f"📡 Scraping {agent['name']} (ID: {agent['id']})...")
-        result = scrape_agent(agent['id'], agent['name'])
-        results.append(result)
-        time.sleep(2)  # Delay untuk menghindari rate limit
+        print(f"Fetching {agent['name']}...")
+        data = query_subgraph(agent["wallet"])
+        results[agent["name"]] = data if data else {"error": "Failed to fetch"}
     
-    # Generate reports
-    markdown_report = generate_markdown(results)
-    json_report = generate_json(results)
+    # Simpan ke file
+    output = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "agents": results
+    }
     
-    # Save to files
-    with open('STATS.md', 'w', encoding='utf-8') as f:
-        f.write(markdown_report)
+    with open("superfluid-data.json", "w") as f:
+        json.dump(output, f, indent=2)
     
-    with open('stats.json', 'w', encoding='utf-8') as f:
-        f.write(json_report)
-    
-    print("\n✅ Reports generated: STATS.md and stats.json")
-    print("\n" + markdown_report)
+    print("✅ Data saved to superfluid-data.json")
 
 if __name__ == "__main__":
     main()
