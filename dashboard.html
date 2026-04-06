@@ -27,10 +27,9 @@
             cursor: pointer;
             margin-bottom: 20px;
         }
-        .refresh-btn:hover { opacity: 0.8; }
         .agent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 24px;
         }
         .agent-card {
@@ -38,18 +37,10 @@
             border-radius: 16px;
             padding: 20px;
             border: 1px solid #333;
-            transition: transform 0.2s;
         }
-        .agent-card:hover { transform: translateY(-4px); border-color: #4ade80; }
         .agent-name { font-size: 1.3rem; font-weight: bold; color: #4ade80; margin-bottom: 4px; }
-        .agent-id { font-size: 0.7rem; color: #888; margin-bottom: 4px; font-family: monospace; }
-        .agent-wallet { 
-            font-size: 0.65rem; 
-            color: #666; 
-            margin-bottom: 16px; 
-            font-family: monospace;
-            word-break: break-all;
-        }
+        .agent-id { font-size: 0.7rem; color: #888; font-family: monospace; }
+        .agent-wallet { font-size: 0.65rem; color: #666; margin-bottom: 16px; font-family: monospace; }
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -63,7 +54,7 @@
             text-align: center;
         }
         .stat-value { font-size: 1.6rem; font-weight: bold; color: #4ade80; }
-        .stat-label { font-size: 0.7rem; color: #888; margin-top: 4px; }
+        .stat-label { font-size: 0.7rem; color: #888; }
         .score-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -80,36 +71,54 @@
             padding-top: 12px;
             border-top: 1px solid #333;
         }
-        .balance-text { 
-            font-size: 1rem; 
-            color: #4ade80; 
-            margin-bottom: 8px;
+        .balance-text {
+            font-size: 1rem;
+            color: #4ade80;
+            margin-bottom: 12px;
             font-weight: bold;
             text-align: center;
             padding: 12px;
             background: #0a0a0a;
             border-radius: 12px;
         }
+        .pool-list {
+            background: #0a0a0a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .pool-header, .pool-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            padding: 10px 12px;
+            font-size: 0.7rem;
+            border-bottom: 1px solid #222;
+        }
+        .pool-header {
+            background: #0f0f0f;
+            color: #4ade80;
+            font-weight: bold;
+            border-bottom: 1px solid #4ade80;
+        }
+        .pool-row {
+            color: #ccc;
+        }
+        .pool-row:last-child { border-bottom: none; }
+        .pool-address { font-family: monospace; color: #4ade80; }
+        .pool-flow { color: #ffaa44; text-align: right; }
         .superfluid-link {
-            display: inline-block;
-            margin-top: 12px;
+            display: block;
+            margin-top: 16px;
             background: #2a2a2a;
-            padding: 8px 16px;
+            padding: 8px;
             border-radius: 20px;
             font-size: 0.75rem;
             color: #4ade80;
             text-decoration: none;
-            transition: all 0.2s;
             text-align: center;
-            width: 100%;
-            box-sizing: border-box;
         }
-        .superfluid-link:hover {
-            background: #4ade80;
-            color: #0a0a0a;
-        }
-        .loading-text { color: #888; font-size: 0.7rem; margin-top: 8px; text-align: center; padding: 20px; }
-        .error-text { color: #ff4444; font-size: 0.7rem; margin-top: 8px; text-align: center; padding: 20px; }
+        .superfluid-link:hover { background: #4ade80; color: #0a0a0a; }
+        .loading-text, .error-text { text-align: center; padding: 20px; color: #888; }
+        .error-text { color: #ff4444; }
         .note {
             margin-top: 32px;
             padding: 16px;
@@ -123,27 +132,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>
-            📊 Agent Dashboard 
-            <span class="badge" id="agentCount">6 Agents</span>
-        </h1>
-        <p class="subtitle">💰 SUP Balance Real-time dari Superfluid (Auto-update via GitHub Actions)</p>
+        <h1>📊 Agent Dashboard <span class="badge" id="agentCount">6 Agents</span></h1>
+        <p class="subtitle">💰 SUP Balance & Pool Distributions (Auto-update)</p>
         <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
-        <div class="last-update" id="lastUpdate">Loading data...</div>
-        
-        <div class="agent-grid" id="agentGrid">
-            <div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>
-        </div>
-        
-        <div class="note">
-            💧 <strong>Data SUP Balance diperbarui otomatis setiap 30 menit via GitHub Actions</strong><br>
-            📌 Balance diambil langsung dari RPC Superfluid (Base Mainnet)<br>
-            🔗 Klik "View on Superfluid" untuk detail lebih lengkap di dashboard resmi Superfluid.
-        </div>
+        <div class="last-update" id="lastUpdate">Loading...</div>
+        <div class="agent-grid" id="agentGrid">Loading...</div>
+        <div class="note">💧 Data diperbarui otomatis setiap 30 menit via GitHub Actions<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
     </div>
-
     <script>
-        // ========== DATA AGENT (dari 8004scan) ==========
         const AGENTS = [
             { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234" },
             { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7", score: "68.50", avgScore: "4.5", feedback: "8", rank: "#312" },
@@ -153,91 +149,87 @@
             { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        // ========== AMBIL DATA DARI superfluid-data.json ==========
+        function formatFlowRate(rate) {
+            if (!rate || rate === "0") return "N/A";
+            const num = parseFloat(rate) / 1e18; // Konversi dari wei/detik
+            const monthly = (num * 30 * 24 * 3600).toFixed(2);
+            return `+${monthly} SUP/bulan`;
+        }
+
         async function loadData() {
             const grid = document.getElementById('agentGrid');
-            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>';
-            document.getElementById('lastUpdate').innerHTML = '⏳ Sedang mengambil data...';
-            
+            grid.innerHTML = '<div class="loading-text">🔄 Loading data...</div>';
             try {
                 const response = await fetch('superfluid-data.json?v=' + Date.now());
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status} - File belum ada`);
-                }
-                
+                if (!response.ok) throw new Error('File not found');
                 const data = await response.json();
                 renderDashboard(data);
-                
                 const updateTime = data.timestamp ? new Date(data.timestamp).toLocaleString() : 'unknown';
-                document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateTime} (via GitHub Actions)`;
-                
+                document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateTime}`;
             } catch (error) {
-                console.error('Error loading data:', error);
-                grid.innerHTML = `<div class="error-text">⚠️ Gagal mengambil data: ${error.message}<br><br>Pastikan file superfluid-data.json sudah dibuat oleh GitHub Actions.</div>`;
-                document.getElementById('lastUpdate').innerHTML = `❌ Error: ${error.message}`;
+                grid.innerHTML = `<div class="error-text">⚠️ Gagal: ${error.message}</div>`;
             }
         }
 
-        // ========== RENDER DASHBOARD ==========
         function renderDashboard(sfData) {
             const grid = document.getElementById('agentGrid');
             document.getElementById('agentCount').innerHTML = `${AGENTS.length} Agents`;
-            
             const agentsData = sfData.agents || {};
             
             grid.innerHTML = AGENTS.map(agent => {
-                const shortWallet = agent.wallet ? `${agent.wallet.substring(0, 10)}...${agent.wallet.substring(38)}` : 'No wallet';
+                const shortWallet = agent.wallet.substring(0, 10) + '...' + agent.wallet.substring(38);
                 const superfluidUrl = `https://app.superfluid.org/token/base/0xa69f80524381275a7ffdb3ae01c54150644c8792?view=${agent.wallet}`;
-                
                 let scoreClass = 'score-zero';
                 if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
                 else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
                 const sup = agentsData[agent.name] || {};
                 const balance = sup.balance || '0';
+                const pools = sup.pools || [];
+                
+                let poolsHtml = '';
+                if (pools.length > 0) {
+                    poolsHtml = `
+                        <div class="pool-list">
+                            <div class="pool-header">
+                                <span>Pool Address</span>
+                                <span>Flow Rate</span>
+                            </div>
+                            ${pools.map(p => `
+                                <div class="pool-row">
+                                    <span class="pool-address">${p.poolAddress}</span>
+                                    <span class="pool-flow">${formatFlowRate(p.flowRate)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    poolsHtml = '<div class="loading-text" style="padding:12px;">⏸ Belum ada pool distribution</div>';
+                }
                 
                 return `
-                <div class="agent-card">
-                    <div class="agent-name">${agent.name}</div>
-                    <div class="agent-id">Agent ID: ${agent.id} | Base Chain</div>
-                    <div class="agent-wallet">💰 Wallet: ${shortWallet}</div>
-                    
-                    <div class="stats">
-                        <div class="stat-card">
-                            <div class="stat-value">${agent.score}</div>
-                            <div class="stat-label">Overall Score</div>
+                    <div class="agent-card">
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-id">Agent ID: ${agent.id} | Base Chain</div>
+                        <div class="agent-wallet">💰 Wallet: ${shortWallet}</div>
+                        <div class="stats">
+                            <div class="stat-card"><div class="stat-value">${agent.score}</div><div class="stat-label">Overall Score</div></div>
+                            <div class="stat-card"><div class="stat-value">${agent.avgScore}</div><div class="stat-label">Avg Score</div></div>
+                            <div class="stat-card"><div class="stat-value">${agent.feedback}</div><div class="stat-label">Feedback</div></div>
+                            <div class="stat-card"><div class="stat-value">${agent.rank}</div><div class="stat-label">Rank</div></div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agent.avgScore}</div>
-                            <div class="stat-label">Avg Score (5.0)</div>
+                        <div class="score-badge ${scoreClass}">${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}</div>
+                        <div class="stream-section">
+                            <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
+                            <div style="font-size:0.7rem; color:#888; margin-bottom:8px;">📡 Stream Distributions (${pools.length} pool)</div>
+                            ${poolsHtml}
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agent.feedback}</div>
-                            <div class="stat-label">Total Feedback</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agent.rank}</div>
-                            <div class="stat-label">Rank</div>
-                        </div>
+                        <a href="${superfluidUrl}" target="_blank" class="superfluid-link">💧 View Detail on Superfluid</a>
                     </div>
-                    
-                    <div class="score-badge ${scoreClass}">
-                        ${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}
-                    </div>
-                    
-                    <div class="stream-section">
-                        <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
-                    </div>
-                    
-                    <a href="${superfluidUrl}" target="_blank" class="superfluid-link">
-                        💧 View Detail on Superfluid
-                    </a>
-                </div>
-            `}).join('');
+                `;
+            }).join('');
         }
-
-        // ========== INIT ==========
+        
         loadData();
     </script>
 </body>
