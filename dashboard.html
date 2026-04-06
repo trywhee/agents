@@ -150,12 +150,17 @@
             { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        function formatFlowRate(rate) {
-            if (!rate || rate === "0" || rate === "N/A") return "N/A";
-            const num = parseFloat(rate);
-            if (isNaN(num)) return "N/A";
-            const monthly = (num / 1e18 * 30 * 24 * 3600).toFixed(2);
-            return `+${monthly} SUP/bulan`;
+        function formatFlowRate(pool) {
+            if (pool.flowRate && pool.flowRate !== "N/A" && !pool.flowRate.includes('%')) {
+                return pool.flowRate;
+            }
+            if (pool.flowRate && pool.flowRate.includes('%')) {
+                return pool.flowRate;
+            }
+            if (pool.totalReceived && pool.totalReceived !== "0 SUP") {
+                return pool.totalReceived;
+            }
+            return "Active";
         }
 
         async function loadData() {
