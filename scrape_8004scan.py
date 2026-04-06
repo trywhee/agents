@@ -28,24 +28,24 @@ def get_sup_balance(wallet_address):
         print(f"Balance error: {e}")
     return "0"
 
-def get_agent_flow_rates(wallet_address):
+def get_agent_pools(wallet_address):
     """
-    Ambil flow rate SPESIFIK agent dari indexSubscriptions.
+    Ambil daftar pool yang diikuti agent beserta units (porsi).
     Query ini sudah terbukti berhasil di test_connection.
     """
     query = f"""
     {{
-      account(id: "{wallet_address.lower()}") {{
+      pools(
+        where: {{poolMembers_: {{account: "{wallet_address.lower()}"}}}}
+      ) {{
         id
-        indexSubscriptions(where: {{approved: true}}) {{
-          approved
+        totalUnits
+        flowRate
+        token {{
+          symbol
+        }}
+        poolMembers(where: {{account: "{wallet_address.lower()}"}}) {{
           units
-          index {{
-            id
-            totalUnits
-            indexId
-          }}
-          totalAmountReceivedUntilUpdatedAt
         }}
       }}
     }}
@@ -63,52 +63,39 @@ def get_agent_flow_rates(wallet_address):
             print(f"  GraphQL Error: {data['errors']}")
             return []
         
-        account = data.get("data", {}).get("account")
-        if not account:
-            print(f"  No account found")
-            return []
-        
-        subscriptions = account.get("indexSubscriptions", [])
-        print(f"  Found {len(subscriptions)} index subscriptions")
+        pools_data = data.get("data", {}).get("pools", [])
+        print(f"  Found {len(pools_data)} pools")
         
         results = []
-        for sub in subscriptions:
-            index_data = sub.get("index", {})
-            if not index_data:
-                continue
+        for pool in pools_data:
+            pool_address = pool.get("id", "")
+            total_units = float(pool.get("totalUnits", 1))
+            pool_flow_rate = float(pool.get("flowRate", 0))
             
-            pool_address = index_data.get("id", "")
-            total_units = float(index_data.get("totalUnits", 1))
-            agent_units = float(sub.get("units", 0))
-            
-            # Hitung flow rate agent berdasarkan porsi
-            # Flow rate agent = (units_agent / total_units) * (total flow rate pool)
-            # Karena total flow rate pool tidak tersedia langsung, kita gunakan units sebagai proksi
-            # Semakin besar units, semakin besar porsi
+            # Ambil units agent dari poolMembers
+            members = pool.get("poolMembers", [])
+            agent_units = 0
+            if members and len(members) > 0:
+                agent_units = float(members[0].get("units", 0))
             
             short_address = f"{pool_address[:6]}...{pool_address[-4:]}" if len(pool_address) > 10 else pool_address
             
-            # Estimasi flow rate (dalam SUP/bulan) berdasarkan units
-            # Ini akan update otomatis ketika total_units pool berubah
-            if total_units > 0 and agent_units > 0:
-                pct = (agent_units / total_units) * 100
-                flow_rate_display = f"{pct:.1f}% of pool"
+            # Hitung flow rate agent (porsi)
+            if total_units > 0 and pool_flow_rate > 0 and agent_units > 0:
+                # Flow rate dalam wei/detik
+                agent_flow_rate_wei = (agent_units / total_units) * pool_flow_rate
+                # Konversi ke SUP/bulan
+                agent_flow_rate_monthly = (agent_flow_rate_wei / 1e18) * 30 * 24 * 3600
+                flow_display = f"+{agent_flow_rate_monthly:.1f}/mo"
             else:
-                flow_rate_display = "Active"
-            
-            # Ambil amount received jika ada
-            raw_amount = sub.get("totalAmountReceivedUntilUpdatedAt", "0")
-            try:
-                amount_received = float(raw_amount) / 1e18
-                amount_display = f"{amount_received:.4f} SUP"
-            except:
-                amount_display = "0 SUP"
+                flow_display = "N/A"
             
             results.append({
                 "poolAddress": short_address,
                 "fullAddress": pool_address,
-                "flowRate": flow_rate_display,
-                "totalReceived": amount_display,
+                "flowRate": flow_display,
+                "units": agent_units,
+                "totalUnits": total_units,
                 "status": "Connected"
             })
         
@@ -119,14 +106,14 @@ def get_agent_flow_rates(wallet_address):
         return []
 
 def main():
-    print("Starting Superfluid data fetch (indexSubscriptions)...")
+    print("Starting Superfluid data fetch (dengan porsi agent)...")
     print(f"Subgraph URL: {SUBGRAPH_URL}\n")
     
     results = {}
     for agent in AGENTS:
         print(f"Processing {agent['name']}...")
         balance = get_sup_balance(agent["wallet"])
-        pools = get_agent_flow_rates(agent["wallet"])
+        pools = get_agent_pools(agent["wallet"])
         
         results[agent["name"]] = {
             "balance": balance,
