@@ -9,7 +9,7 @@ jobs:
   fetch-data:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # <--- Ini penting untuk memberi akses push
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -17,20 +17,19 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Konfigurasi Git Safe Directory
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
       - name: Install dependencies
         run: pip install requests
+      
+      - name: Test connection to subgraph
+        run: python test_connection.py
       
       - name: Run fetch script
         run: python scrape_8004scan.py
       
       - name: Commit and push if changed
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add superfluid-data.json
           git diff --staged --quiet || git commit -m "🤖 Auto-update Superfluid data"
           git push
