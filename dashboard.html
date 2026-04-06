@@ -151,9 +151,17 @@
         ];
 
         function formatFlowRate(flowRate) {
+            // Jika flowRate sudah dalam format "+X/mo" atau "N/A"
             if (!flowRate || flowRate === "N/A") return "N/A";
-            if (flowRate.includes('/mo')) return flowRate;
-            return flowRate;
+            if (typeof flowRate === 'string' && flowRate.includes('/mo')) return flowRate;
+            if (typeof flowRate === 'string' && flowRate.includes('+')) return flowRate;
+            // Jika masih angka, format manual
+            if (typeof flowRate === 'number' || !isNaN(parseFloat(flowRate))) {
+                const num = parseFloat(flowRate);
+                if (num > 1000) return `+${(num/1000).toFixed(1)}k/mo`;
+                if (num > 0) return `+${num.toFixed(1)}/mo`;
+            }
+            return "Active";
         }
 
         async function loadData() {
@@ -198,12 +206,20 @@
                                     <span>Pool Address</span>
                                     <span>Flow Rate</span>
                                 </div>
-                                ${pools.map(p => `
+                                ${pools.map(p => {
+                                    // Ambil flowRate dari berbagai kemungkinan field
+                                    let flow = p.flowRate || p.flow || p.flow_rate || "N/A";
+                                    // Jika flow masih "N/A" tapi ada units, hitung estimasi
+                                    if ((flow === "N/A" || flow === "Active") && p.units && p.totalUnits) {
+                                        const pct = (p.units / p.totalUnits * 100).toFixed(1);
+                                        flow = `${pct}% of pool`;
+                                    }
+                                    return `
                                     <div class="pool-row">
                                         <span class="pool-address">${p.poolAddress || p.fullAddress?.substring(0,10)+'...' || 'Unknown'}</span>
-                                        <span class="pool-flow">${formatFlowRate(p.flowRate)}</span>
+                                        <span class="pool-flow">${formatFlowRate(flow)}</span>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         </div>
                     `;
