@@ -85,6 +85,7 @@
             background: #0a0a0a;
             border-radius: 12px;
             overflow: hidden;
+            margin-top: 8px;
         }
         .pool-header, .pool-row {
             display: grid;
@@ -133,11 +134,11 @@
 <body>
     <div class="container">
         <h1>📊 Agent Dashboard <span class="badge" id="agentCount">6 Agents</span></h1>
-        <p class="subtitle">💰 SUP Balance & Pool Distributions (Auto-update)</p>
+        <p class="subtitle">💰 SUP Balance & Pool Distributions (Auto-update via GitHub Actions)</p>
         <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
         <div class="last-update" id="lastUpdate">Loading...</div>
         <div class="agent-grid" id="agentGrid">Loading...</div>
-        <div class="note">💧 Data diperbarui otomatis setiap 30 menit via GitHub Actions<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
+        <div class="note">💧 Data diperbarui otomatis setiap 30 menit<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
     </div>
     <script>
         const AGENTS = [
@@ -150,24 +151,26 @@
         ];
 
         function formatFlowRate(rate) {
-            if (!rate || rate === "0") return "N/A";
-            const num = parseFloat(rate) / 1e18; // Konversi dari wei/detik
-            const monthly = (num * 30 * 24 * 3600).toFixed(2);
+            if (!rate || rate === "0" || rate === "N/A") return "N/A";
+            const num = parseFloat(rate);
+            if (isNaN(num)) return "N/A";
+            const monthly = (num / 1e18 * 30 * 24 * 3600).toFixed(2);
             return `+${monthly} SUP/bulan`;
         }
 
         async function loadData() {
             const grid = document.getElementById('agentGrid');
-            grid.innerHTML = '<div class="loading-text">🔄 Loading data...</div>';
+            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>';
             try {
                 const response = await fetch('superfluid-data.json?v=' + Date.now());
-                if (!response.ok) throw new Error('File not found');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 renderDashboard(data);
                 const updateTime = data.timestamp ? new Date(data.timestamp).toLocaleString() : 'unknown';
                 document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateTime}`;
             } catch (error) {
-                grid.innerHTML = `<div class="error-text">⚠️ Gagal: ${error.message}</div>`;
+                console.error('Error:', error);
+                grid.innerHTML = `<div class="error-text">⚠️ Gagal mengambil data: ${error.message}</div>`;
             }
         }
 
@@ -190,21 +193,24 @@
                 let poolsHtml = '';
                 if (pools.length > 0) {
                     poolsHtml = `
-                        <div class="pool-list">
-                            <div class="pool-header">
-                                <span>Pool Address</span>
-                                <span>Flow Rate</span>
-                            </div>
-                            ${pools.map(p => `
-                                <div class="pool-row">
-                                    <span class="pool-address">${p.poolAddress}</span>
-                                    <span class="pool-flow">${formatFlowRate(p.flowRate)}</span>
+                        <div style="margin-top:12px;">
+                            <div style="font-size:0.7rem; color:#4ade80; margin-bottom:8px;">📡 Stream Distributions (${pools.length} pool):</div>
+                            <div class="pool-list">
+                                <div class="pool-header">
+                                    <span>Pool Address</span>
+                                    <span>Flow Rate</span>
                                 </div>
-                            `).join('')}
+                                ${pools.map(p => `
+                                    <div class="pool-row">
+                                        <span class="pool-address">${p.poolAddress || p.fullAddress?.substring(0,10)+'...' || 'Unknown'}</span>
+                                        <span class="pool-flow">${formatFlowRate(p.flowRate)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `;
                 } else {
-                    poolsHtml = '<div class="loading-text" style="padding:12px;">⏸ Belum ada pool distribution</div>';
+                    poolsHtml = `<div style="margin-top:12px; font-size:0.7rem; color:#888; text-align:center; padding:12px;">⏸ Belum ada pool distribution</div>`;
                 }
                 
                 return `
@@ -221,7 +227,6 @@
                         <div class="score-badge ${scoreClass}">${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}</div>
                         <div class="stream-section">
                             <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
-                            <div style="font-size:0.7rem; color:#888; margin-bottom:8px;">📡 Stream Distributions (${pools.length} pool)</div>
                             ${poolsHtml}
                         </div>
                         <a href="${superfluidUrl}" target="_blank" class="superfluid-link">💧 View Detail on Superfluid</a>
