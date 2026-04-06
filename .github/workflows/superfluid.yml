@@ -19,7 +19,7 @@ jobs:
         run: pip install requests
       
       - name: Run fetch script
-        run: python fetch_sup_data.py
+        run: python scrape_8004scan.py
       
       - name: Commit and push if changed
         run: |
