@@ -138,7 +138,7 @@
         <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
         <div class="last-update" id="lastUpdate">Loading...</div>
         <div class="agent-grid" id="agentGrid">Loading...</div>
-        <div class="note">💧 Data diperbarui otomatis setiap 30 menit<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
+        <div class="note">💧 Data diperbarui otomatis setiap 6 jam<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
     </div>
     <script>
         const AGENTS = [
@@ -150,17 +150,10 @@
             { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        function formatFlowRate(pool) {
-            if (pool.flowRate && pool.flowRate !== "N/A" && !pool.flowRate.includes('%')) {
-                return pool.flowRate;
-            }
-            if (pool.flowRate && pool.flowRate.includes('%')) {
-                return pool.flowRate;
-            }
-            if (pool.totalReceived && pool.totalReceived !== "0 SUP") {
-                return pool.totalReceived;
-            }
-            return "Active";
+        function formatFlowRate(flowRate) {
+            if (!flowRate || flowRate === "N/A") return "N/A";
+            if (flowRate.includes('/mo')) return flowRate;
+            return flowRate;
         }
 
         async function loadData() {
