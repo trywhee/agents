@@ -30,22 +30,22 @@ def get_sup_balance(wallet_address):
 
 def get_agent_flow_rates(wallet_address):
     """
-    Ambil flow rate SPESIFIK agent dari setiap pool yang diikuti.
-    Menggunakan query poolMembers yang mengembalikan units agent.
+    Ambil flow rate SPESIFIK agent dari indexSubscriptions.
+    Query ini sudah terbukti berhasil di test_connection.
     """
     query = f"""
     {{
       account(id: "{wallet_address.lower()}") {{
-        pools(where: {{isMember: true}}) {{
-          pool {{
+        id
+        indexSubscriptions(where: {{approved: true}}) {{
+          approved
+          units
+          index {{
             id
             totalUnits
-            flowRate
-            token {{
-              symbol
-            }}
+            indexId
           }}
-          units
+          totalAmountReceivedUntilUpdatedAt
         }}
       }}
     }}
@@ -53,48 +53,73 @@ def get_agent_flow_rates(wallet_address):
     
     try:
         response = requests.post(SUBGRAPH_URL, json={"query": query}, timeout=30)
-        if response.status_code == 200:
-            data = response.json()
-            account = data.get("data", {}).get("account")
-            if not account:
-                return []
-            
-            pools_data = account.get("pools", [])
-            results = []
-            
-            for p in pools_data:
-                pool = p.get("pool", {})
-                pool_address = pool.get("id", "")
-                total_units = float(pool.get("totalUnits", 1))
-                pool_flow_rate = float(pool.get("flowRate", 0))
-                agent_units = float(p.get("units", 0))
-                
-                # Hitung porsi agent (flow rate agent = (units agent / total units) * pool flow rate)
-                if total_units > 0 and pool_flow_rate > 0:
-                    agent_flow_rate = (agent_units / total_units) * pool_flow_rate
-                    # Konversi ke SUP/bulan
-                    agent_flow_rate_monthly = (agent_flow_rate / 1e18) * 30 * 24 * 3600
-                    
-                    # Format address pendek
-                    short_address = f"{pool_address[:6]}...{pool_address[-4:]}" if len(pool_address) > 10 else pool_address
-                    
-                    results.append({
-                        "poolAddress": short_address,
-                        "fullAddress": pool_address,
-                        "flowRate": f"+{agent_flow_rate_monthly:.1f}/mo",
-                        "status": "Connected"
-                    })
-            
-            return results
-        else:
-            print(f"Subgraph Error: {response.status_code}")
+        if response.status_code != 200:
+            print(f"  HTTP Error: {response.status_code}")
             return []
+        
+        data = response.json()
+        
+        if "errors" in data:
+            print(f"  GraphQL Error: {data['errors']}")
+            return []
+        
+        account = data.get("data", {}).get("account")
+        if not account:
+            print(f"  No account found")
+            return []
+        
+        subscriptions = account.get("indexSubscriptions", [])
+        print(f"  Found {len(subscriptions)} index subscriptions")
+        
+        results = []
+        for sub in subscriptions:
+            index_data = sub.get("index", {})
+            if not index_data:
+                continue
+            
+            pool_address = index_data.get("id", "")
+            total_units = float(index_data.get("totalUnits", 1))
+            agent_units = float(sub.get("units", 0))
+            
+            # Hitung flow rate agent berdasarkan porsi
+            # Flow rate agent = (units_agent / total_units) * (total flow rate pool)
+            # Karena total flow rate pool tidak tersedia langsung, kita gunakan units sebagai proksi
+            # Semakin besar units, semakin besar porsi
+            
+            short_address = f"{pool_address[:6]}...{pool_address[-4:]}" if len(pool_address) > 10 else pool_address
+            
+            # Estimasi flow rate (dalam SUP/bulan) berdasarkan units
+            # Ini akan update otomatis ketika total_units pool berubah
+            if total_units > 0 and agent_units > 0:
+                pct = (agent_units / total_units) * 100
+                flow_rate_display = f"{pct:.1f}% of pool"
+            else:
+                flow_rate_display = "Active"
+            
+            # Ambil amount received jika ada
+            raw_amount = sub.get("totalAmountReceivedUntilUpdatedAt", "0")
+            try:
+                amount_received = float(raw_amount) / 1e18
+                amount_display = f"{amount_received:.4f} SUP"
+            except:
+                amount_display = "0 SUP"
+            
+            results.append({
+                "poolAddress": short_address,
+                "fullAddress": pool_address,
+                "flowRate": flow_rate_display,
+                "totalReceived": amount_display,
+                "status": "Connected"
+            })
+        
+        return results
+        
     except Exception as e:
-        print(f"Subgraph Exception: {e}")
+        print(f"  Exception: {str(e)}")
         return []
 
 def main():
-    print("Starting Superfluid data fetch (dengan porsi agent)...")
+    print("Starting Superfluid data fetch (indexSubscriptions)...")
     print(f"Subgraph URL: {SUBGRAPH_URL}\n")
     
     results = {}
