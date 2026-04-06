@@ -15,15 +15,26 @@
         .container { max-width: 1400px; margin: 0 auto; }
         h1 { color: #4ade80; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .badge { background: #4ade8020; color: #4ade80; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
-        .subtitle { color: #888; margin-bottom: 32px; }
+        .subtitle { color: #888; margin-bottom: 8px; }
         .last-update { font-size: 12px; color: #666; margin-bottom: 20px; }
-        
+        .status-ok { color: #4ade80; }
+        .status-error { color: #ff4444; }
+        .refresh-btn {
+            background: #4ade80;
+            color: #0a0a0a;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover { opacity: 0.8; }
         .agent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 24px;
         }
-        
         .agent-card {
             background: #1a1a1a;
             border-radius: 16px;
@@ -32,7 +43,6 @@
             transition: transform 0.2s;
         }
         .agent-card:hover { transform: translateY(-4px); border-color: #4ade80; }
-        
         .agent-name { font-size: 1.3rem; font-weight: bold; color: #4ade80; margin-bottom: 4px; }
         .agent-id { font-size: 0.7rem; color: #888; margin-bottom: 4px; font-family: monospace; }
         .agent-wallet { 
@@ -42,7 +52,6 @@
             font-family: monospace;
             word-break: break-all;
         }
-        
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -57,7 +66,6 @@
         }
         .stat-value { font-size: 1.6rem; font-weight: bold; color: #4ade80; }
         .stat-label { font-size: 0.7rem; color: #888; margin-top: 4px; }
-        
         .score-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -68,7 +76,7 @@
         }
         .score-high { background: #4ade8020; color: #4ade80; border: 1px solid #4ade80; }
         .score-mid { background: #ffaa4420; color: #ffaa44; border: 1px solid #ffaa44; }
-        
+        .score-zero { background: #ff444420; color: #ff4444; border: 1px solid #ff4444; }
         .stream-section {
             margin-top: 16px;
             padding-top: 12px;
@@ -79,44 +87,33 @@
             color: #4ade80;
             margin-bottom: 8px;
         }
-        .stream-item {
-            background: #0a0a0a;
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            font-size: 0.7rem;
-        }
-        .stream-pool { color: #4ade80; font-family: monospace; }
-        .stream-amount { color: #ffaa44; }
-        .stream-flow { color: #888; }
         .balance-text { 
             font-size: 0.85rem; 
             color: #4ade80; 
             margin-bottom: 8px;
             font-weight: bold;
         }
-        
-        .note {
-            margin-top: 32px;
-            padding: 16px;
-            background: #1a1a1a;
-            border-radius: 12px;
-            font-size: 12px;
-            color: #888;
-            text-align: center;
+        .flowrate-text {
+            font-size: 0.8rem;
+            color: #ffaa44;
+            margin-bottom: 12px;
         }
-        .update-btn {
-            background: #4ade80;
-            color: #0a0a0a;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
+        .pool-list {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 200px;
+            overflow-y: auto;
         }
-        .update-btn:hover { opacity: 0.8; }
-        
+        .pool-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #222;
+            font-size: 0.7rem;
+        }
+        .pool-item:last-child { border-bottom: none; }
+        .pool-address { color: #4ade80; font-family: monospace; }
+        .pool-amount { color: #ffaa44; float: right; }
+        .pool-flow { color: #888; font-size: 0.65rem; margin-top: 4px; }
         .superfluid-link {
             display: inline-block;
             margin-top: 12px;
@@ -132,33 +129,46 @@
             background: #4ade80;
             color: #0a0a0a;
         }
-        .loading-text { color: #888; font-size: 0.7rem; margin-top: 8px; }
+        .loading-text { color: #888; font-size: 0.7rem; margin-top: 8px; text-align: center; padding: 20px; }
+        .error-text { color: #ff4444; font-size: 0.7rem; margin-top: 8px; text-align: center; padding: 20px; }
+        .note {
+            margin-top: 32px;
+            padding: 16px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>
             📊 Agent Dashboard 
-            <span class="badge">6 Agents</span>
+            <span class="badge" id="agentCount">6 Agents</span>
         </h1>
-        <p class="subtitle">Statistik dari 8004scan + Streaming dari Superfluid (auto-update setiap 6 jam)</p>
-        <button class="update-btn" onclick="openEditSheet()">✏️ Edit Data 8004scan</button>
-        <div class="last-update" id="lastUpdate">Loading...</div>
+        <p class="subtitle">Data SUP Balance & Streaming dari Superfluid Subgraph (Real-time)</p>
+        <button class="refresh-btn" onclick="fetchAllData()">🔄 Refresh Data</button>
+        <div class="last-update" id="lastUpdate">Loading data from subgraph...</div>
         
         <div class="agent-grid" id="agentGrid">
-            <div style="text-align: center; grid-column: 1/-1;">🔄 Loading dashboard...</div>
+            <div class="loading-text">🔄 Mengambil data dari Superfluid Subgraph...</div>
         </div>
         
         <div class="note">
-            📌 <strong>Cara Update 8004scan:</strong> Klik tombol "Edit Data 8004scan" di atas.<br>
-            💧 <strong>Data Superfluid</strong> diupdate otomatis setiap 6 jam via GitHub Actions.<br>
-            🔗 Data diambil dari <a href="https://github.com/trywhee/agents/blob/main/superfluid-data.json" target="_blank" style="color:#4ade80;">superfluid-data.json</a>
+            💧 <strong>Data real-time dari Superfluid Subgraph (Base Mainnet)</strong><br>
+            📌 Menampilkan balance SUP, total inflow rate, dan total SUP diterima dari setiap pool.<br>
+            🔗 Klik "View on Superfluid" untuk detail lebih lengkap.
         </div>
     </div>
 
     <script>
-        // ========== DATA AGENT (8004scan) ==========
-        const DEFAULT_AGENTS = [
+        // ========== ENDPOINT SUBGRAPH SUPERFLUID ==========
+        const SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-base-mainnet";
+        
+        // ========== DATA AGENT (dari 8004scan) ==========
+        const AGENTS = [
             { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234" },
             { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7", score: "68.50", avgScore: "4.5", feedback: "8", rank: "#312" },
             { id: 22455, name: "DataQuant Pro", wallet: "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948", score: "65.20", avgScore: "4.3", feedback: "6", rank: "#401" },
@@ -167,79 +177,170 @@
             { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
         ];
 
-        let agentsData = JSON.parse(localStorage.getItem('agentStats')) || DEFAULT_AGENTS;
-        let superfluidData = null;
-
-        function saveToLocal() {
-            localStorage.setItem('agentStats', JSON.stringify(agentsData));
+        // ========== QUERY SUBGRAPH UNTUK 1 WALLET ==========
+        function buildQuery(walletAddress) {
+            return `
+            query GetAgentData {
+                account(id: "${walletAddress.toLowerCase()}") {
+                    id
+                    tokenBalances(where: { token_: { symbol: "SUPx" } }) {
+                        balance
+                        totalInflowRate
+                        token {
+                            symbol
+                        }
+                    }
+                    subscriptions {
+                        index {
+                            id
+                        }
+                        totalAmountReceivedUntilUpdatedAt
+                        units
+                        approved
+                    }
+                }
+            }
+            `;
         }
 
-        // ========== LOAD SUPERFLUID DATA ==========
-        async function loadSuperfluidData() {
+        // ========== FETCH DATA DARI SUBGRAPH UNTUK 1 AGENT ==========
+        async function fetchAgentData(agent) {
             try {
-                const response = await fetch('superfluid-data.json?v=' + Date.now());
-                if (response.ok) {
-                    superfluidData = await response.json();
-                    console.log("✅ Superfluid data loaded:", superfluidData);
-                } else {
-                    console.warn("superfluid-data.json not found");
+                const query = buildQuery(agent.wallet);
+                const response = await fetch(SUBGRAPH_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
+                
+                const result = await response.json();
+                const account = result.data?.account;
+                
+                if (!account) {
+                    return { success: false, error: "Agent not found in subgraph" };
+                }
+                
+                // Parse balance dan flow rate
+                let balance = "0";
+                let inflowRate = "0";
+                if (account.tokenBalances && account.tokenBalances.length > 0) {
+                    const rawBalance = account.tokenBalances[0].balance;
+                    const rawInflow = account.tokenBalances[0].totalInflowRate;
+                    // Konversi dari wei (18 decimals) ke SUP
+                    balance = (parseFloat(rawBalance) / 1e18).toFixed(6);
+                    // Inflow rate per detik -> per bulan (30 hari)
+                    const monthlyRate = (parseFloat(rawInflow) / 1e18) * 30 * 24 * 3600;
+                    inflowRate = monthlyRate.toFixed(2);
+                }
+                
+                // Parse subscriptions (pools)
+                const pools = [];
+                if (account.subscriptions && account.subscriptions.length > 0) {
+                    for (const sub of account.subscriptions) {
+                        if (sub.approved && parseFloat(sub.totalAmountReceivedUntilUpdatedAt) > 0) {
+                            const amountReceived = (parseFloat(sub.totalAmountReceivedUntilUpdatedAt) / 1e18).toFixed(4);
+                            pools.push({
+                                poolAddress: sub.index.id,
+                                totalReceived: amountReceived,
+                                units: sub.units
+                            });
+                        }
+                    }
+                }
+                
+                return {
+                    success: true,
+                    balance: balance,
+                    inflowRate: inflowRate,
+                    pools: pools,
+                    hasStreams: pools.length > 0
+                };
+                
             } catch (error) {
-                console.error("Error loading superfluid-data.json:", error);
+                console.error(`Error fetching ${agent.name}:`, error);
+                return { success: false, error: error.message };
             }
         }
 
-        // ========== RENDER DASHBOARD ==========
-        function renderDashboard() {
+        // ========== FETCH SEMUA AGENT ==========
+        async function fetchAllData() {
             const grid = document.getElementById('agentGrid');
+            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari Superfluid Subgraph...</div>';
+            document.getElementById('lastUpdate').innerHTML = '⏳ Sedang mengambil data...';
             
-            grid.innerHTML = agentsData.map(agent => {
+            const results = [];
+            for (const agent of AGENTS) {
+                const sfData = await fetchAgentData(agent);
+                results.push({ agent, sfData });
+                // Delay kecil agar tidak kena rate limit
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            renderDashboard(results);
+            document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${new Date().toLocaleString()} (dari Superfluid Subgraph)`;
+        }
+
+        // ========== RENDER DASHBOARD ==========
+        function renderDashboard(results) {
+            const grid = document.getElementById('agentGrid');
+            document.getElementById('agentCount').innerHTML = `${AGENTS.length} Agents`;
+            
+            grid.innerHTML = results.map(({ agent, sfData }) => {
                 const shortWallet = agent.wallet ? `${agent.wallet.substring(0, 10)}...${agent.wallet.substring(38)}` : 'No wallet';
-                const superfluidUrl = agent.wallet ? `https://app.superfluid.org/?view=${agent.wallet}` : '#';
+                const superfluidUrl = `https://app.superfluid.org/token/base/0xa69f80524381275a7ffdb3ae01c54150644c8792?view=${agent.wallet}`;
                 
-                // Cari data Superfluid untuk agent ini
-                let sfData = null;
-                if (superfluidData && superfluidData.agents) {
-                    sfData = superfluidData.agents[agent.name];
-                }
+                // Score badge class
+                let scoreClass = 'score-zero';
+                if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
+                else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
-                // Format streaming HTML
+                // Streaming section
                 let streamingHtml = '';
-                if (sfData) {
-                    // Cek apakah balance valid (bukan "0" dan bukan error)
-                    const hasValidBalance = sfData.success && sfData.balance && sfData.balance !== "0" && parseFloat(sfData.balance) > 0;
+                if (sfData.success) {
+                    const hasValidBalance = parseFloat(sfData.balance) > 0 || sfData.hasStreams;
                     
                     if (hasValidBalance) {
                         streamingHtml = `
                             <div class="stream-section">
-                                <div class="balance-text">💧 Balance: ${sfData.balance} SUP</div>
-                                <div class="stream-title">📡 Stream Distributions:</div>
+                                <div class="balance-text">💧 SUP Balance: ${sfData.balance} SUP</div>
+                                <div class="flowrate-text">📈 Total Inflow Rate: +${sfData.inflowRate} SUP/bulan</div>
+                                <div class="stream-title">📡 Pool Distributions (${sfData.pools.length} pool):</div>
+                                <div class="pool-list">
                         `;
-                        if (sfData.streams && sfData.streams.length > 0) {
-                            sfData.streams.forEach(s => {
+                        
+                        if (sfData.pools.length > 0) {
+                            sfData.pools.forEach(pool => {
+                                const shortPool = `${pool.poolAddress.substring(0, 10)}...${pool.poolAddress.substring(34)}`;
                                 streamingHtml += `
-                                    <div class="stream-item">
-                                        <div class="stream-pool">Pool: ${s.pool}</div>
-                                        <div class="stream-amount">Amount: ${s.amount} SUP</div>
-                                        <div class="stream-flow">Flow: ${s.flow}</div>
+                                    <div class="pool-item">
+                                        <span class="pool-address">${shortPool}</span>
+                                        <span class="pool-amount">${pool.totalReceived} SUP</span>
                                     </div>
                                 `;
                             });
                         } else {
-                            streamingHtml += `<div class="loading-text">⏸ No active streams</div>`;
+                            streamingHtml += `<div class="loading-text">⏸ Belum ada distribusi tercatat</div>`;
                         }
-                        streamingHtml += `</div>`;
+                        
+                        streamingHtml += `
+                                </div>
+                            </div>
+                        `;
                     } else {
                         streamingHtml = `
                             <div class="stream-section">
-                                <div class="loading-text">⚠️ No SUP balance or unable to fetch</div>
+                                <div class="loading-text">⏸ Belum menerima SUP stream</div>
                             </div>
                         `;
                     }
                 } else {
                     streamingHtml = `
                         <div class="stream-section">
-                            <div class="loading-text">⏳ Waiting for Superfluid data...</div>
+                            <div class="error-text">⚠️ Gagal mengambil data: ${sfData.error || 'unknown'}</div>
                         </div>
                     `;
                 }
@@ -269,76 +370,21 @@
                         </div>
                     </div>
                     
-                    <div class="score-badge ${parseFloat(agent.score) >= 60 ? 'score-high' : 'score-mid'}">
-                        ✅ Terdaftar di 8004scan
+                    <div class="score-badge ${scoreClass}">
+                        ${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}
                     </div>
                     
                     ${streamingHtml}
                     
                     <a href="${superfluidUrl}" target="_blank" class="superfluid-link">
-                        💧 View on Superfluid
+                        💧 View Detail on Superfluid
                     </a>
                 </div>
             `}).join('');
-            
-            // Update timestamp
-            if (superfluidData && superfluidData.timestamp) {
-                const date = new Date(superfluidData.timestamp);
-                document.getElementById('lastUpdate').innerHTML = `Last update: ${date.toLocaleString()} (Superfluid auto-update)`;
-            } else {
-                document.getElementById('lastUpdate').innerHTML = `Last update: ${new Date().toLocaleString()}`;
-            }
-        }
-
-        // ========== EDIT DATA 8004SCAN ==========
-        function openEditSheet() {
-            let currentData = agentsData.map(a => `${a.id}|${a.score}|${a.avgScore}|${a.feedback}|${a.rank}`).join(',\n');
-            
-            let newData = prompt(
-                "📝 UPDATE DATA AGENT (8004scan)\n\n" +
-                "Format: agent_id|score|avgScore|feedback|rank\n" +
-                "Pisahkan dengan koma untuk multiple agent.\n\n" +
-                "Data saat ini:\n" + currentData + "\n\n" +
-                "Contoh:\n" +
-                "22524|72.37|4.7|14|#234,\n" +
-                "22497|68.50|4.5|8|#312,\n" +
-                "30502|0|0|0|#4940\n\n" +
-                "Edit sesuai data terbaru dari 8004scan, lalu OK."
-            );
-            
-            if (newData && newData.trim()) {
-                const lines = newData.split(',');
-                for (let line of lines) {
-                    const parts = line.trim().split('|');
-                    if (parts.length >= 5) {
-                        const agentId = parseInt(parts[0]);
-                        const score = parts[1];
-                        const avgScore = parts[2];
-                        const feedback = parts[3];
-                        const rank = parts[4];
-                        
-                        const agentIndex = agentsData.findIndex(a => a.id === agentId);
-                        if (agentIndex !== -1) {
-                            agentsData[agentIndex].score = score;
-                            agentsData[agentIndex].avgScore = avgScore;
-                            agentsData[agentIndex].feedback = feedback;
-                            agentsData[agentIndex].rank = rank;
-                        }
-                    }
-                }
-                saveToLocal();
-                renderDashboard();
-                alert("✅ Data 8004scan berhasil diupdate!");
-            }
         }
 
         // ========== INIT ==========
-        async function init() {
-            await loadSuperfluidData();
-            renderDashboard();
-        }
-        
-        init();
+        fetchAllData();
     </script>
 </body>
 </html>
