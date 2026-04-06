@@ -80,47 +80,29 @@
             padding-top: 12px;
             border-top: 1px solid #333;
         }
-        .stream-title {
-            font-size: 0.75rem;
-            color: #4ade80;
-            margin-bottom: 8px;
-        }
         .balance-text { 
-            font-size: 0.85rem; 
+            font-size: 1rem; 
             color: #4ade80; 
             margin-bottom: 8px;
             font-weight: bold;
-        }
-        .flowrate-text {
-            font-size: 0.8rem;
-            color: #ffaa44;
-            margin-bottom: 12px;
-        }
-        .pool-list {
+            text-align: center;
+            padding: 12px;
             background: #0a0a0a;
-            border-radius: 8px;
-            padding: 8px;
-            max-height: 200px;
-            overflow-y: auto;
+            border-radius: 12px;
         }
-        .pool-item {
-            padding: 8px 12px;
-            border-bottom: 1px solid #222;
-            font-size: 0.7rem;
-        }
-        .pool-item:last-child { border-bottom: none; }
-        .pool-address { color: #4ade80; font-family: monospace; }
-        .pool-amount { color: #ffaa44; float: right; }
         .superfluid-link {
             display: inline-block;
             margin-top: 12px;
             background: #2a2a2a;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #4ade80;
             text-decoration: none;
             transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .superfluid-link:hover {
             background: #4ade80;
@@ -145,7 +127,7 @@
             📊 Agent Dashboard 
             <span class="badge" id="agentCount">6 Agents</span>
         </h1>
-        <p class="subtitle">Data SUP Balance & Streaming dari Superfluid (Auto-update via GitHub Actions)</p>
+        <p class="subtitle">💰 SUP Balance Real-time dari Superfluid (Auto-update via GitHub Actions)</p>
         <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
         <div class="last-update" id="lastUpdate">Loading data...</div>
         
@@ -154,9 +136,9 @@
         </div>
         
         <div class="note">
-            💧 <strong>Data diperbarui otomatis setiap 30 menit via GitHub Actions</strong><br>
-            📌 Menampilkan balance SUP, total inflow rate, dan total SUP diterima dari setiap pool.<br>
-            🔗 Klik "View on Superfluid" untuk detail lebih lengkap.
+            💧 <strong>Data SUP Balance diperbarui otomatis setiap 30 menit via GitHub Actions</strong><br>
+            📌 Balance diambil langsung dari RPC Superfluid (Base Mainnet)<br>
+            🔗 Klik "View on Superfluid" untuk detail lebih lengkap di dashboard resmi Superfluid.
         </div>
     </div>
 
@@ -178,11 +160,10 @@
             document.getElementById('lastUpdate').innerHTML = '⏳ Sedang mengambil data...';
             
             try {
-                // Tambah timestamp biar tidak kena cache
                 const response = await fetch('superfluid-data.json?v=' + Date.now());
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status} - File belum ada atau error`);
+                    throw new Error(`HTTP ${response.status} - File belum ada`);
                 }
                 
                 const data = await response.json();
@@ -213,58 +194,8 @@
                 if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
                 else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
-                // Ambil data SUP dari hasil fetch
                 const sup = agentsData[agent.name] || {};
-                const hasData = sup && !sup.error;
-                const balance = hasData ? sup.balance : '0';
-                const inflowRate = hasData ? sup.inflowRate : '0';
-                const pools = hasData ? sup.pools : [];
-                
-                let streamingHtml = '';
-                if (hasData) {
-                    const hasValidBalance = parseFloat(balance) > 0 || pools.length > 0;
-                    
-                    if (hasValidBalance) {
-                        streamingHtml = `
-                            <div class="stream-section">
-                                <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
-                                <div class="flowrate-text">📈 Total Inflow Rate: +${inflowRate} SUP/bulan</div>
-                                <div class="stream-title">📡 Pool Distributions (${pools.length} pool):</div>
-                                <div class="pool-list">
-                        `;
-                        
-                        if (pools.length > 0) {
-                            pools.forEach(pool => {
-                                const shortPool = `${pool.poolAddress.substring(0, 10)}...${pool.poolAddress.substring(34)}`;
-                                streamingHtml += `
-                                    <div class="pool-item">
-                                        <span class="pool-address">${shortPool}</span>
-                                        <span class="pool-amount">${pool.totalReceived} SUP</span>
-                                    </div>
-                                `;
-                            });
-                        } else {
-                            streamingHtml += `<div class="loading-text">⏸ Belum ada distribusi tercatat</div>`;
-                        }
-                        
-                        streamingHtml += `
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        streamingHtml = `
-                            <div class="stream-section">
-                                <div class="loading-text">⏸ Belum menerima SUP stream</div>
-                            </div>
-                        `;
-                    }
-                } else {
-                    streamingHtml = `
-                        <div class="stream-section">
-                            <div class="error-text">⚠️ Data SUP belum tersedia</div>
-                        </div>
-                    `;
-                }
+                const balance = sup.balance || '0';
                 
                 return `
                 <div class="agent-card">
@@ -295,7 +226,9 @@
                         ${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}
                     </div>
                     
-                    ${streamingHtml}
+                    <div class="stream-section">
+                        <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
+                    </div>
                     
                     <a href="${superfluidUrl}" target="_blank" class="superfluid-link">
                         💧 View Detail on Superfluid
