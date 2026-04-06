@@ -2,6 +2,7 @@ import json
 import requests
 from datetime import datetime
 
+# Daftar agent (wallet address) - SAMA PERSIS SEPERTI SEBELUMNYA
 AGENTS = [
     {"name": "Quantiva Intelligence", "wallet": "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7"},
     {"name": "Nexora Analytics AI", "wallet": "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7"},
@@ -11,8 +12,8 @@ AGENTS = [
     {"name": "StoryWeaver AI", "wallet": "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058"}
 ]
 
-# PASTIKAN URL INI BENAR
-SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-base-mainnet"
+# <--- INI PERUBAHAN UTAMA: GANTI DENGAN ENDPOINT YANG BARU
+SUBGRAPH_URL = "https://subgraph.satsuma-prod.com/3b5f1e47e3f6/superfluid-base-mainnet/api"
 
 def query_subgraph(wallet_address):
     query = f"""
@@ -34,43 +35,62 @@ def query_subgraph(wallet_address):
         print(f"Querying {wallet_address}...")
         response = requests.post(SUBGRAPH_URL, json={"query": query}, timeout=30)
         if response.status_code != 200:
+            print(f"HTTP Error {response.status_code}: {response.text}")
             return None
         data = response.json()
+        if "errors" in data:
+            print(f"GraphQL Error: {data['errors']}")
+            return None
+            
         account = data.get("data", {}).get("account")
         if not account:
+            print(f"No account found for {wallet_address}")
             return None
         
+        # Parse balance
         balance = "0"
         inflow_rate = "0"
-        if account.get("tokenBalances"):
+        if account.get("tokenBalances") and len(account["tokenBalances"]) > 0:
             raw_balance = account["tokenBalances"][0]["balance"]
             raw_inflow = account["tokenBalances"][0]["totalInflowRate"]
             balance = f"{float(raw_balance) / 1e18:.6f}"
             monthly_rate = (float(raw_inflow) / 1e18) * 30 * 24 * 3600
             inflow_rate = f"{monthly_rate:.2f}"
+            print(f"Balance: {balance} SUP, Inflow: {inflow_rate}/month")
         
+        # Parse pools
         pools = []
         for sub in account.get("subscriptions", []):
             if sub.get("approved") and float(sub.get("totalAmountReceivedUntilUpdatedAt", 0)) > 0:
+                amount = float(sub['totalAmountReceivedUntilUpdatedAt']) / 1e18
                 pools.append({
                     "poolAddress": sub["index"]["id"],
-                    "totalReceived": f"{float(sub['totalAmountReceivedUntilUpdatedAt']) / 1e18:.4f}"
+                    "totalReceived": f"{amount:.4f}"
                 })
+                print(f"Pool {sub['index']['id'][:10]}...: {amount:.4f} SUP")
         
         return {"balance": balance, "inflowRate": inflow_rate, "pools": pools}
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Exception for {wallet_address}: {str(e)}")
         return None
 
 def main():
+    print("Starting Superfluid data fetch...")
     results = {}
     for agent in AGENTS:
+        print(f"\n--- Fetching {agent['name']} ---")
         data = query_subgraph(agent["wallet"])
         results[agent["name"]] = data if data else {"error": "Failed to fetch"}
     
+    output = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "agents": results
+    }
+    
     with open("superfluid-data.json", "w") as f:
-        json.dump({"timestamp": datetime.utcnow().isoformat(), "agents": results}, f, indent=2)
-    print("Done!")
+        json.dump(output, f, indent=2)
+    
+    print("\n✅ Data saved to superfluid-data.json")
 
 if __name__ == "__main__":
     main()
