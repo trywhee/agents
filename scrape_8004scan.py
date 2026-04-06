@@ -29,37 +29,25 @@ def get_sup_balance(wallet_address):
     return "0"
 
 def get_pool_distributions(wallet_address):
-    """Query lengkap seperti yang digunakan dashboard Superfluid"""
+    """Query hanya dengan field yang VALID"""
     query = f"""
     {{
       account(id: "{wallet_address.lower()}") {{
         id
         subscriptions(where: {{approved: true}}) {{
-          id
           approved
           units
-          totalUnits
-          totalAmountReceivedUntilUpdatedAt
-          totalAmountReceived
-          totalDistributionAmountReceived
           index {{
             id
             indexId
-            totalUnits
-            token {{
-              id
-              symbol
-              name
-              decimals
-            }}
           }}
+          totalAmountReceivedUntilUpdatedAt
         }}
       }}
     }}
     """
     
     try:
-        print(f"  Querying subgraph for {wallet_address[:10]}...")
         response = requests.post(SUBGRAPH_URL, json={"query": query}, timeout=30)
         
         if response.status_code != 200:
@@ -68,7 +56,6 @@ def get_pool_distributions(wallet_address):
         
         data = response.json()
         
-        # Debug: print response structure
         if "errors" in data:
             print(f"  GraphQL Error: {data['errors']}")
             return []
@@ -97,13 +84,10 @@ def get_pool_distributions(wallet_address):
             except:
                 amount_formatted = "0"
             
-            # Hitung flow rate per bulan (estimasi dari units)
-            flow_rate = "+.../mo"
-            
             pools.append({
                 "poolAddress": short_address,
                 "totalReceived": amount_formatted,
-                "flowRate": flow_rate,
+                "flowRate": "+.../mo",
                 "status": "Connected"
             })
             
@@ -115,8 +99,7 @@ def get_pool_distributions(wallet_address):
 
 def main():
     print("Starting Superfluid data fetch...")
-    print(f"Subgraph URL: {SUBGRAPH_URL}")
-    print()
+    print(f"Subgraph URL: {SUBGRAPH_URL}\n")
     
     results = {}
     for agent in AGENTS:
