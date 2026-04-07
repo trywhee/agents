@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - 8004scan Real-time Data</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .success { color: #4ade80; }
+        .error { color: #ff4444; }
+        button {
+            background: #4ade80;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>🧪 Test 8004scan Real-time Data</h2>
+    <button onclick="fetchAllData()">🚀 Ambil Data dari 8004scan</button>
+    <div id="result">
+        <pre>Klik tombol untuk mulai...</pre>
+    </div>
+
+    <script>
+        // Daftar agent yang mau di-test
+        const AGENTS = [
+            { id: 22524, name: "Quantiva Intelligence" },
+            { id: 22497, name: "Nexora Analytics AI" },
+            { id: 22455, name: "DataQuant Pro" },
+            { id: 22300, name: "DataAnalyst Pro" },
+            { id: 22398, name: "InsightForge AI" },
+            { id: 30502, name: "StoryWeaver AI" }
+        ];
+
+        // Proxy CORS gratis (untuk bypass CORS)
+        const PROXY = "https://api.allorigins.win/raw?url=";
+
+        async function fetchAgentData(agentId, agentName) {
+            const url = `https://8004scan.io/agents/base/${agentId}`;
+            const proxyUrl = PROXY + encodeURIComponent(url);
+            
+            try {
+                console.log(`Fetching ${agentName}...`);
+                const response = await fetch(proxyUrl);
+                const html = await response.text();
+                
+                // Ekstrak data dengan regex (sementara, nanti perbaiki selector)
+                let overallScore = "N/A";
+                let rank = "N/A";
+                let totalFeedback = "N/A";
+                let avgScore = "N/A";
+                
+                // Cari Overall Score
+                const scoreMatch = html.match(/Overall Score<\/div>\s*<div[^>]*>\s*([\d.]+)/i);
+                if (scoreMatch) overallScore = scoreMatch[1];
+                
+                // Cari Rank
+                const rankMatch = html.match(/Rank<\/div>\s*<div[^>]*>\s*(#\d+)/i);
+                if (rankMatch) rank = rankMatch[1];
+                
+                // Cari Total Feedback
+                const fbMatch = html.match(/Total Feedback<\/div>\s*<div[^>]*>\s*(\d+)/i);
+                if (fbMatch) totalFeedback = fbMatch[1];
+                
+                // Cari Average Score
+                const avgMatch = html.match(/Average Score<\/div>\s*<div[^>]*>\s*([\d.]+)/i);
+                if (avgMatch) avgScore = avgMatch[1];
+                
+                return {
+                    id: agentId,
+                    name: agentName,
+                    overall_score: overallScore,
+                    rank: rank,
+                    total_feedback: totalFeedback,
+                    avg_score: avgScore,
+                    status: "success"
+                };
+            } catch (error) {
+                return {
+                    id: agentId,
+                    name: agentName,
+                    error: error.message,
+                    status: "failed"
+                };
+            }
+        }
+
+        async function fetchAllData() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<pre>🔄 Mengambil data dari 8004scan via proxy...\nIni mungkin butuh beberapa detik...</pre>';
+            
+            const results = [];
+            for (const agent of AGENTS) {
+                const data = await fetchAgentData(agent.id, agent.name);
+                results.push(data);
+                // Delay 1 detik biar tidak kena rate limit
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            
+            // Tampilkan hasil
+            let output = "📊 HASIL TEST REAL-TIME DARI 8004SCAN\n";
+            output += "=".repeat(50) + "\n\n";
+            
+            results.forEach(r => {
+                if (r.status === "success") {
+                    output += `✅ ${r.name} (ID: ${r.id})\n`;
+                    output += `   ├─ Overall Score: ${r.overall_score}\n`;
+                    output += `   ├─ Rank: ${r.rank}\n`;
+                    output += `   ├─ Total Feedback: ${r.total_feedback}\n`;
+                    output += `   └─ Avg Score: ${r.avg_score}\n\n`;
+                } else {
+                    output += `❌ ${r.name} (ID: ${r.id})\n`;
+                    output += `   └─ Error: ${r.error}\n\n`;
+                }
+            });
+            
+            output += "=".repeat(50) + "\n";
+            output += `⏰ Waktu: ${new Date().toLocaleString()}\n`;
+            output += "📌 Catatan: Data ini diambil LANGSUNG dari 8004scan secara real-time.\n";
+            
+            resultDiv.innerHTML = `<pre>${output}</pre>`;
+        }
+    </script>
+</body>
+</html>
