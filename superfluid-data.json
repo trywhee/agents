@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-07T02:09:03.159638",
+  "timestamp": "2026-04-07T07:12:57.464660",
   "agents": {
     "Quantiva Intelligence": {
-      "balance": "3.351795",
+      "balance": "4.207542",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
@@ -23,7 +23,7 @@
       ]
     },
     "Nexora Analytics AI": {
-      "balance": "3.351889",
+      "balance": "4.207542",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
@@ -44,7 +44,7 @@
       ]
     },
     "DataQuant Pro": {
-      "balance": "2.805859",
+      "balance": "3.522823",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
@@ -65,7 +65,7 @@
       ]
     },
     "DataAnalyst Pro": {
-      "balance": "3.494652",
+      "balance": "4.350305",
       "pools": [
         {
           "poolAddress": "0x2d0a...b4ed",
@@ -110,7 +110,7 @@
       ]
     },
     "InsightForge AI": {
-      "balance": "32.678475",
+      "balance": "40.652597",
       "pools": [
         {
           "poolAddress": "0x72ab...2cf7",
@@ -139,7 +139,7 @@
       ]
     },
     "StoryWeaver AI": {
-      "balance": "14.659869",
+      "balance": "15.515522",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
