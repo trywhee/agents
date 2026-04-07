@@ -134,28 +134,30 @@
 <body>
     <div class="container">
         <h1>📊 Agent Dashboard <span class="badge" id="agentCount">6 Agents</span></h1>
-        <p class="subtitle">💰 SUP Balance & Pool Distributions (Auto-update via GitHub Actions)</p>
-        <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+        <p class="subtitle">💰 SUP Balance & Pool Distributions + 8004scan Scores (Auto-update)</p>
+        <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh Data</button>
         <div class="last-update" id="lastUpdate">Loading...</div>
         <div class="agent-grid" id="agentGrid">Loading...</div>
-        <div class="note">💧 Data diperbarui otomatis setiap 6 jam<br>🔗 Klik "View on Superfluid" untuk detail resmi</div>
+        <div class="note">💧 Balance & Streams: auto-update setiap 6 jam<br>📊 Scores: auto-update setiap 6 jam dari 8004scan</div>
     </div>
     <script>
+        // Data default untuk 6 agent
         const AGENTS = [
-            { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7", score: "72.37", avgScore: "4.7", feedback: "14", rank: "#234" },
-            { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7", score: "68.50", avgScore: "4.5", feedback: "8", rank: "#312" },
-            { id: 22455, name: "DataQuant Pro", wallet: "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948", score: "65.20", avgScore: "4.3", feedback: "6", rank: "#401" },
-            { id: 22300, name: "DataAnalyst Pro", wallet: "0xe16b3f9617aae564c7314bb555c052ce6524fd3f", score: "45.38", avgScore: "4.4", feedback: "2", rank: "#832" },
-            { id: 22398, name: "InsightForge AI", wallet: "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32", score: "58.90", avgScore: "4.2", feedback: "5", rank: "#445" },
-            { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058", score: "0", avgScore: "0", feedback: "0", rank: "#4940" }
+            { id: 22524, name: "Quantiva Intelligence", wallet: "0xb9868eb3bb740d4d61c0dc1feb4bed6fb58f76e7" },
+            { id: 22497, name: "Nexora Analytics AI", wallet: "0xB9868eB3Bb740d4d61c0Dc1fEb4Bed6FB58f76E7" },
+            { id: 22455, name: "DataQuant Pro", wallet: "0xC222Ce890859E07D8b31a3ccb8C186ebA9914948" },
+            { id: 22300, name: "DataAnalyst Pro", wallet: "0xe16b3f9617aae564c7314bb555c052ce6524fd3f" },
+            { id: 22398, name: "InsightForge AI", wallet: "0x32D9b8E82aa07F77bcBB648Ccf534ED41A782b32" },
+            { id: 30502, name: "StoryWeaver AI", wallet: "0x65f20d80f2817cb4524bfc0f3bc37173da6b1058" }
         ];
 
+        let superfluidData = null;
+        let scoresData = null;
+
         function formatFlowRate(flowRate) {
-            // Jika flowRate sudah dalam format "+X/mo" atau "N/A"
             if (!flowRate || flowRate === "N/A") return "N/A";
             if (typeof flowRate === 'string' && flowRate.includes('/mo')) return flowRate;
             if (typeof flowRate === 'string' && flowRate.includes('+')) return flowRate;
-            // Jika masih angka, format manual
             if (typeof flowRate === 'number' || !isNaN(parseFloat(flowRate))) {
                 const num = parseFloat(flowRate);
                 if (num > 1000) return `+${(num/1000).toFixed(1)}k/mo`;
@@ -164,37 +166,81 @@
             return "Active";
         }
 
-        async function loadData() {
+        async function loadAllData() {
             const grid = document.getElementById('agentGrid');
-            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari superfluid-data.json...</div>';
+            grid.innerHTML = '<div class="loading-text">🔄 Mengambil data dari superfluid-data.json dan 8004scan_scores.json...</div>';
+            
             try {
-                const response = await fetch('superfluid-data.json?v=' + Date.now());
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                renderDashboard(data);
-                const updateTime = data.timestamp ? new Date(data.timestamp).toLocaleString() : 'unknown';
-                document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateTime}`;
+                // Load Superfluid data
+                const sfResponse = await fetch('superfluid-data.json?v=' + Date.now());
+                if (sfResponse.ok) {
+                    superfluidData = await sfResponse.json();
+                }
+                
+                // Load 8004scan scores data
+                const scoresResponse = await fetch('8004scan_scores.json?v=' + Date.now());
+                if (scoresResponse.ok) {
+                    scoresData = await scoresResponse.json();
+                }
+                
+                renderDashboard();
+                
+                let updateText = '';
+                if (superfluidData?.timestamp) {
+                    updateText += `Superfluid: ${new Date(superfluidData.timestamp).toLocaleString()}`;
+                }
+                if (scoresData?.timestamp) {
+                    if (updateText) updateText += ' | ';
+                    updateText += `Scores: ${new Date(scoresData.timestamp).toLocaleString()}`;
+                }
+                document.getElementById('lastUpdate').innerHTML = `✅ Last update: ${updateText || 'unknown'}`;
             } catch (error) {
                 console.error('Error:', error);
                 grid.innerHTML = `<div class="error-text">⚠️ Gagal mengambil data: ${error.message}</div>`;
             }
         }
 
-        function renderDashboard(sfData) {
+        function getScoreClass(score) {
+            if (score >= 70) return 'score-high';
+            if (score > 0) return 'score-mid';
+            return 'score-zero';
+        }
+
+        function renderDashboard() {
             const grid = document.getElementById('agentGrid');
             document.getElementById('agentCount').innerHTML = `${AGENTS.length} Agents`;
-            const agentsData = sfData.agents || {};
+            
+            // Get scores data
+            const scoreMap = {};
+            if (scoresData?.agents) {
+                scoresData.agents.forEach(agent => {
+                    scoreMap[agent.name] = agent;
+                });
+            }
+            
+            // Get Superfluid data
+            const sfMap = {};
+            if (superfluidData?.agents) {
+                Object.keys(superfluidData.agents).forEach(name => {
+                    sfMap[name] = superfluidData.agents[name];
+                });
+            }
             
             grid.innerHTML = AGENTS.map(agent => {
                 const shortWallet = agent.wallet.substring(0, 10) + '...' + agent.wallet.substring(38);
                 const superfluidUrl = `https://app.superfluid.org/token/base/0xa69f80524381275a7ffdb3ae01c54150644c8792?view=${agent.wallet}`;
-                let scoreClass = 'score-zero';
-                if (parseFloat(agent.score) >= 60) scoreClass = 'score-high';
-                else if (parseFloat(agent.score) > 0) scoreClass = 'score-mid';
                 
-                const sup = agentsData[agent.name] || {};
-                const balance = sup.balance || '0';
-                const pools = sup.pools || [];
+                // Ambil data dari 8004scan scores
+                const scoreData = scoreMap[agent.name] || {};
+                const totalScore = scoreData.total_score || 0;
+                const avgScore = scoreData.average_score || 0;
+                const totalFeedback = scoreData.total_feedbacks || 0;
+                const scoreClass = getScoreClass(totalScore);
+                
+                // Ambil data dari Superfluid
+                const sfData = sfMap[agent.name] || {};
+                const balance = sfData.balance || '0';
+                const pools = sfData.pools || [];
                 
                 let poolsHtml = '';
                 if (pools.length > 0) {
@@ -207,9 +253,7 @@
                                     <span>Flow Rate</span>
                                 </div>
                                 ${pools.map(p => {
-                                    // Ambil flowRate dari berbagai kemungkinan field
                                     let flow = p.flowRate || p.flow || p.flow_rate || "N/A";
-                                    // Jika flow masih "N/A" tapi ada units, hitung estimasi
                                     if ((flow === "N/A" || flow === "Active") && p.units && p.totalUnits) {
                                         const pct = (p.units / p.totalUnits * 100).toFixed(1);
                                         flow = `${pct}% of pool`;
@@ -233,12 +277,12 @@
                         <div class="agent-id">Agent ID: ${agent.id} | Base Chain</div>
                         <div class="agent-wallet">💰 Wallet: ${shortWallet}</div>
                         <div class="stats">
-                            <div class="stat-card"><div class="stat-value">${agent.score}</div><div class="stat-label">Overall Score</div></div>
-                            <div class="stat-card"><div class="stat-value">${agent.avgScore}</div><div class="stat-label">Avg Score</div></div>
-                            <div class="stat-card"><div class="stat-value">${agent.feedback}</div><div class="stat-label">Feedback</div></div>
-                            <div class="stat-card"><div class="stat-value">${agent.rank}</div><div class="stat-label">Rank</div></div>
+                            <div class="stat-card"><div class="stat-value">${totalScore}</div><div class="stat-label">Overall Score</div></div>
+                            <div class="stat-card"><div class="stat-value">${avgScore}</div><div class="stat-label">Avg Score</div></div>
+                            <div class="stat-card"><div class="stat-value">${totalFeedback}</div><div class="stat-label">Feedback</div></div>
+                            <div class="stat-card"><div class="stat-value">-</div><div class="stat-label">Rank</div></div>
                         </div>
-                        <div class="score-badge ${scoreClass}">${parseFloat(agent.score) > 0 ? '✅ Terdaftar di 8004scan' : '🆕 Agent Baru'}</div>
+                        <div class="score-badge ${scoreClass}">${totalScore > 0 ? '✅ Data dari 8004scan' : '⏳ Menunggu data'}</div>
                         <div class="stream-section">
                             <div class="balance-text">💧 SUP Balance: ${balance} SUP</div>
                             ${poolsHtml}
@@ -249,7 +293,7 @@
             }).join('');
         }
         
-        loadData();
+        loadAllData();
     </script>
 </body>
 </html>
