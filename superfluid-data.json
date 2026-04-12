@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-12T02:24:44.438169",
+  "timestamp": "2026-04-12T07:11:14.751221",
   "agents": {
     "Quantiva Intelligence": {
       "balance": "4.445551",
@@ -44,7 +44,7 @@
       ]
     },
     "DataQuant Pro": {
-      "balance": "0.604697",
+      "balance": "0.473859",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
