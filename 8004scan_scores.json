@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-17T19:10:45.675347",
+  "timestamp": "2026-04-18T02:55:42.203839",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 92.9,
+      "total_score": 92.91,
       "average_score": 94.79,
       "total_feedbacks": 28
     },
