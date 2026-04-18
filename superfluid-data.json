@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-18T07:04:21.828487",
+  "timestamp": "2026-04-18T12:58:02.624280",
   "agents": {
     "Quantiva Intelligence": {
       "balance": "4.445551",
@@ -80,7 +80,7 @@
           "fullAddress": "0x7ad5f68a8ee037172babc66a34a1b39ed45a3448",
           "flowRate": "N/A",
           "units": 202.0,
-          "totalUnits": 22577250.0,
+          "totalUnits": 22576975.0,
           "status": "Connected"
         },
         {
