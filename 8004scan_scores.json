@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-24T19:02:57.611267",
+  "timestamp": "2026-04-25T02:57:14.538391",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 92.83,
+      "total_score": 92.91,
       "average_score": 94.79,
       "total_feedbacks": 28
     },
@@ -30,7 +30,7 @@
       "success": true,
       "name": "DataAnalyst Pro",
       "agent_id": 22300,
-      "total_score": 92.76,
+      "total_score": 92.69,
       "average_score": 94.36,
       "total_feedbacks": 22
     },
