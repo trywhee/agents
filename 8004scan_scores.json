@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-25T19:02:59.227565",
+  "timestamp": "2026-04-26T03:36:16.850198",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 92.92,
+      "total_score": 92.91,
       "average_score": 94.79,
       "total_feedbacks": 28
     },
@@ -14,7 +14,7 @@
       "success": true,
       "name": "Nexora Analytics AI",
       "agent_id": 22497,
-      "total_score": 92.76,
+      "total_score": 92.6,
       "average_score": 95.35,
       "total_feedbacks": 20
     },
