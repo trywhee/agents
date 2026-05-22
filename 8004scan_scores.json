@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-05-22T09:39:10.689595",
+  "timestamp": "2026-05-22T14:54:11.730548",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 92.9,
-      "average_score": 94.79,
-      "total_feedbacks": 28
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
@@ -38,9 +38,9 @@
       "success": true,
       "name": "InsightForge AI",
       "agent_id": 22398,
-      "total_score": 92.7,
-      "average_score": 94.59,
-      "total_feedbacks": 22
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
