@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-26T04:07:14.288123",
+  "timestamp": "2026-05-26T10:08:19.201757",
   "total_agents": 6,
   "agents": [
     {
@@ -30,9 +30,9 @@
       "success": true,
       "name": "DataAnalyst Pro",
       "agent_id": 22300,
-      "total_score": 92.76,
-      "average_score": 94.36,
-      "total_feedbacks": 22
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
@@ -46,9 +46,9 @@
       "success": true,
       "name": "StoryWeaver AI",
       "agent_id": 30502,
-      "total_score": 73.34,
-      "average_score": 99.08,
-      "total_feedbacks": 12
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     }
   ]
 }
