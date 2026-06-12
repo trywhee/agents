@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-12T04:41:27.278174",
+  "timestamp": "2026-06-12T10:22:55.141255",
   "total_agents": 6,
   "agents": [
     {
@@ -31,8 +31,8 @@
       "name": "DataAnalyst Pro",
       "agent_id": 22300,
       "total_score": 92.76,
-      "average_score": 94.36,
-      "total_feedbacks": 22
+      "average_score": 94.17,
+      "total_feedbacks": 23
     },
     {
       "success": true,
