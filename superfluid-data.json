@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T19:46:14.347152",
+  "timestamp": "2026-06-27T02:51:41.290933",
   "agents": {
     "Quantiva Intelligence": {
       "balance": "4.445551",
@@ -139,7 +139,7 @@
       ]
     },
     "StoryWeaver AI": {
-      "balance": "15.753344",
+      "balance": "0",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
