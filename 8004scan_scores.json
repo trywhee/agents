@@ -1,30 +1,30 @@
 {
-  "timestamp": "2026-06-30T20:05:50.444279",
+  "timestamp": "2026-07-01T04:24:13.692485",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 92.86,
-      "average_score": 94.38,
-      "total_feedbacks": 29
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
       "name": "Nexora Analytics AI",
       "agent_id": 22497,
-      "total_score": 92.76,
-      "average_score": 95.35,
-      "total_feedbacks": 20
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
       "name": "DataQuant Pro",
       "agent_id": 22455,
-      "total_score": 92.69,
-      "average_score": 93.48,
-      "total_feedbacks": 25
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
@@ -38,17 +38,17 @@
       "success": true,
       "name": "InsightForge AI",
       "agent_id": 22398,
-      "total_score": 92.71,
-      "average_score": 94.59,
-      "total_feedbacks": 22
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
       "name": "StoryWeaver AI",
       "agent_id": 30502,
-      "total_score": 73.34,
-      "average_score": 99.08,
-      "total_feedbacks": 12
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     }
   ]
 }
