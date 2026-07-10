@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-09T19:41:34.921579",
+  "timestamp": "2026-07-10T02:45:13.226497",
   "agents": {
     "Quantiva Intelligence": {
       "balance": "4.445551",
@@ -65,7 +65,7 @@
       ]
     },
     "DataAnalyst Pro": {
-      "balance": "4.588221",
+      "balance": "0",
       "pools": [
         {
           "poolAddress": "0x2d0a...b4ed",
@@ -110,7 +110,7 @@
       ]
     },
     "InsightForge AI": {
-      "balance": "0.000000",
+      "balance": "0",
       "pools": [
         {
           "poolAddress": "0x72ab...2cf7",
