@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-27T22:05:26.739028",
+  "timestamp": "2026-08-28T10:50:58.755549",
   "total_agents": 6,
   "agents": [
     {
@@ -15,7 +15,7 @@
       "name": "Nexora Analytics AI",
       "agent_id": 22497,
       "total_score": 92.76,
-      "average_score": 95.35,
+      "average_score": 0.0,
       "total_feedbacks": 20
     },
     {
@@ -47,7 +47,7 @@
       "name": "StoryWeaver AI",
       "agent_id": 30502,
       "total_score": 73.34,
-      "average_score": 99.08,
+      "average_score": 0.0,
       "total_feedbacks": 12
     }
   ]
