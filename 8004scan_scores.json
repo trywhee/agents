@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-01T20:52:30.200444",
+  "timestamp": "2026-09-02T03:56:50.134058",
   "total_agents": 6,
   "agents": [
     {
@@ -23,7 +23,7 @@
       "name": "DataQuant Pro",
       "agent_id": 22455,
       "total_score": 92.69,
-      "average_score": 93.48,
+      "average_score": 0.0,
       "total_feedbacks": 25
     },
     {
