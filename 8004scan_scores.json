@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-04T20:36:27.758611",
+  "timestamp": "2026-09-05T03:54:56.214512",
   "total_agents": 6,
   "agents": [
     {
@@ -14,9 +14,9 @@
       "success": true,
       "name": "Nexora Analytics AI",
       "agent_id": 22497,
-      "total_score": 92.76,
-      "average_score": 0.0,
-      "total_feedbacks": 20
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
