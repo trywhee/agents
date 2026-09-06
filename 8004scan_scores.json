@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-05T20:10:38.452311",
+  "timestamp": "2026-09-06T03:59:56.565795",
   "total_agents": 6,
   "agents": [
     {
@@ -14,9 +14,9 @@
       "success": true,
       "name": "Nexora Analytics AI",
       "agent_id": 22497,
-      "total_score": 0,
-      "average_score": 0,
-      "total_feedbacks": 0
+      "total_score": 92.76,
+      "average_score": 0.0,
+      "total_feedbacks": 20
     },
     {
       "success": true,
@@ -30,9 +30,9 @@
       "success": true,
       "name": "DataAnalyst Pro",
       "agent_id": 22300,
-      "total_score": 0,
-      "average_score": 0,
-      "total_feedbacks": 0
+      "total_score": 92.76,
+      "average_score": 0.0,
+      "total_feedbacks": 23
     },
     {
       "success": true,
