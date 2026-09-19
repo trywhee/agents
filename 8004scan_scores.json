@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-19T10:39:59.098853",
+  "timestamp": "2026-09-19T15:42:37.921381",
   "total_agents": 6,
   "agents": [
     {
@@ -8,7 +8,7 @@
       "agent_id": 22524,
       "total_score": 92.86,
       "average_score": 0.0,
-      "total_feedbacks": 41
+      "total_feedbacks": 42
     },
     {
       "success": true,
