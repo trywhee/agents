@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-22T16:40:52.758986",
+  "timestamp": "2026-09-22T21:06:34.320680",
   "total_agents": 6,
   "agents": [
     {
@@ -16,7 +16,7 @@
       "agent_id": 22497,
       "total_score": 92.76,
       "average_score": 91.0,
-      "total_feedbacks": 21
+      "total_feedbacks": 22
     },
     {
       "success": true,
@@ -24,7 +24,7 @@
       "agent_id": 22455,
       "total_score": 92.69,
       "average_score": 93.0,
-      "total_feedbacks": 26
+      "total_feedbacks": 27
     },
     {
       "success": true,
@@ -32,7 +32,7 @@
       "agent_id": 22300,
       "total_score": 92.76,
       "average_score": 93.0,
-      "total_feedbacks": 24
+      "total_feedbacks": 25
     },
     {
       "success": true,
