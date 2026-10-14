@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-13T22:29:10.911892",
+  "timestamp": "2026-10-14T04:23:28.498067",
   "total_agents": 6,
   "agents": [
     {
@@ -38,9 +38,9 @@
       "success": true,
       "name": "InsightForge AI",
       "agent_id": 22398,
-      "total_score": 92.05,
-      "average_score": 91.0,
-      "total_feedbacks": 25
+      "total_score": 0,
+      "average_score": 0,
+      "total_feedbacks": 0
     },
     {
       "success": true,
