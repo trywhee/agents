@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-10-19T04:08:20.079519",
+  "timestamp": "2026-10-19T12:43:52.050051",
   "total_agents": 6,
   "agents": [
     {
       "success": true,
       "name": "Quantiva Intelligence",
       "agent_id": 22524,
-      "total_score": 91.9,
+      "total_score": 91.83,
       "average_score": 88.0,
       "total_feedbacks": 45
     },
@@ -46,7 +46,7 @@
       "success": true,
       "name": "StoryWeaver AI",
       "agent_id": 30502,
-      "total_score": 30.47,
+      "total_score": 30.48,
       "average_score": 0.0,
       "total_feedbacks": 12
     }
