@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-11-05T13:57:30.095910",
+  "timestamp": "2026-11-05T23:14:30.507038",
   "agents": {
     "Quantiva Intelligence": {
-      "balance": "4.445551",
+      "balance": "0",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
@@ -23,7 +23,7 @@
       ]
     },
     "Nexora Analytics AI": {
-      "balance": "4.445551",
+      "balance": "0",
       "pools": [
         {
           "poolAddress": "0xc500...15b2",
